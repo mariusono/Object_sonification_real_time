@@ -46,13 +46,16 @@ let loopGlobal;
 loopGlobal = new Tone.Loop(loopStep, "1n");  // '1n' here sets the speed of our loop -- every 1th note
 count = 0; // counter for number of objects currently playing.
 
-
+loopGlobal.interval = 1;
 
 let intervalVal = loopGlobal.interval;
-let silenceTimePerc = 0;
+let silenceTimePerc = 10; // default value
 let silenceTime = intervalVal * silenceTimePerc / 100;
 
 // Set sliders.
+document.getElementById('Gain').value = linearMapping(0, 10000,-30.0, 10.0, -6);
+document.getElementById('Interval').value = intervalVal;
+document.getElementById('Silence').value = silenceTimePerc;
 document.getElementById('Gain').innerText = parseFloat(-6).toFixed(4);
 document.getElementById('Interval').innerText = parseFloat(intervalVal).toFixed(4);
 document.getElementById('Silence').innerText = parseFloat(silenceTimePerc).toFixed(4);
@@ -196,6 +199,7 @@ button_2.addEventListener("click", async () => {
 
 function setGain(v) {
     let gainVal = linearMapping(-30.0, 10.0, 0, 10000, v); // db linear Scale
+    console.log(v);
     let gainVal_amp = 10 ** (gainVal / 20);
     if (gainVal_amp < 0.0316 + 0.0001) { // equivalent of -30 dB + 0.0001
         gainVal_amp = 0;
