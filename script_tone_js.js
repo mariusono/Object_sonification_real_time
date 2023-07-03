@@ -20,7 +20,7 @@ const baseNotePossibilities_drone = [110,155.56,196]
 const freeverb = new Tone.Freeverb(0.3,5000);
 
 // create a gain node
-const gainNode = new Tone.Gain(0.0);
+const gainNode = new Tone.Gain(-12.0);
 
 //connect freeverb to gain
 freeverb.connect(gainNode); // synth goes to gain !
@@ -28,7 +28,7 @@ freeverb.connect(gainNode); // synth goes to gain !
 // send gain to audio destination (audio out)
 gainNode.toDestination();
 
-gainNode.gain.rampTo(db2mag(-6), 0.1);
+// gainNode.gain.rampTo(db2mag(-12), 0.1);
 
 
 
@@ -48,18 +48,20 @@ count = 0; // counter for number of objects currently playing.
 
 loopGlobal.interval = 1;
 
+console.log("Gain node value is " + gainNode.gain.value);
+let gainValue = gainNode.gain.value;
 let intervalVal = loopGlobal.interval;
 let silenceTimePerc = 10; // default value
 let silenceTime = intervalVal * silenceTimePerc / 100;
 
+
 // Set sliders.
-document.getElementById('Gain').value = linearMapping(0, 10000,-30.0, 10.0, -6);
-document.getElementById('Interval').value = intervalVal;
-document.getElementById('Silence').value = silenceTimePerc;
-document.getElementById('Gain').innerText = parseFloat(-6).toFixed(4);
+document.getElementById('Gain').innerText = parseFloat(gainValue).toFixed(4);
 document.getElementById('Interval').innerText = parseFloat(intervalVal).toFixed(4);
 document.getElementById('Silence').innerText = parseFloat(silenceTimePerc).toFixed(4);
 
+
+document.getElementById('Gain').value = 1500;
 
 function loopStep(time){
     let sonifiedObjects_keys = Object.keys(sonifiedObjects);
