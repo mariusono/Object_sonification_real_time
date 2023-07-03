@@ -39,12 +39,12 @@ let sonifiedObjects = {};
 // // Try to make a global loop to go through each sonified object at a time.. 
 // let loopGlobal = new Tone.Loop(loopStep, "1n");  // '1n' here sets the speed of our loop -- every 1th note
 
-count = 0;
 
 
 
 let loopGlobal;
 loopGlobal = new Tone.Loop(loopStep, "1n");  // '1n' here sets the speed of our loop -- every 1th note
+count = 0; // counter for number of objects currently playing.
 
 
 

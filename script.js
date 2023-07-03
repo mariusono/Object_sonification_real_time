@@ -257,7 +257,7 @@ function WebSocketTest() {
             function (message) {
                 console.log('Received humanws message:' + message.data);
                 json_human_workspace_sub.subscribe(function (message) { 
-                    doSonification(message.data); 
+                    doSonification(message.data); // message.data is same as received_msg in the offline mode (nodeJS flag true)
 
                     let JsonString = JSON.parse(message.data);
                     let JsonString_keys = Object.keys(JsonString);
