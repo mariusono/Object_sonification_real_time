@@ -201,7 +201,7 @@ function doSonification(received_msg) {
 }
 
 
-function WebSocketTest() {
+function WebSocketCallback() {
 
     if (doNodeJS) {
         video_rgb.play();

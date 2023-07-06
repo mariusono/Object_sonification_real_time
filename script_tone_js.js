@@ -20,7 +20,7 @@ const baseNotePossibilities_drone = [110,155.56,196]
 const freeverb = new Tone.Freeverb(0.3,5000);
 
 // create a gain node
-const gainNode = new Tone.Gain(-12.0);
+const gainNode = new Tone.Gain(db2mag(-12.0));
 
 //connect freeverb to gain
 freeverb.connect(gainNode); // synth goes to gain !
@@ -48,7 +48,6 @@ count = 0; // counter for number of objects currently playing.
 
 loopGlobal.interval = 1;
 
-console.log("Gain node value is " + gainNode.gain.value);
 let gainValue = gainNode.gain.value;
 let intervalVal = loopGlobal.interval;
 let silenceTimePerc = 10; // default value
@@ -56,7 +55,7 @@ let silenceTime = intervalVal * silenceTimePerc / 100;
 
 
 // Set sliders.
-document.getElementById('Gain').innerText = parseFloat(gainValue).toFixed(4);
+document.getElementById('Gain').innerText = parseFloat(mag2db(gainValue)).toFixed(4);
 document.getElementById('Interval').innerText = parseFloat(intervalVal).toFixed(4);
 document.getElementById('Silence').innerText = parseFloat(silenceTimePerc).toFixed(4);
 
@@ -201,7 +200,7 @@ button_2.addEventListener("click", async () => {
 
 function setGain(v) {
     let gainVal = linearMapping(-30.0, 10.0, 0, 10000, v); // db linear Scale
-    console.log(v);
+    console.log("HERE!!" + v);
     let gainVal_amp = 10 ** (gainVal / 20);
     if (gainVal_amp < 0.0316 + 0.0001) { // equivalent of -30 dB + 0.0001
         gainVal_amp = 0;

@@ -40,21 +40,22 @@
 
     <!-- <h2>Global Volume</h2> -->
     Gain <i id='Gain'></i>
-    <input id='sliderInterval' type="range" min="0" max="10000" value="4500" oninput="setGain(this.value)"><br> // default values matching the inputs in <script_tone_js class="js"></script_tone_js>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="4500" oninput="setGain(this.value)"><br>
 
     Interval Sounds <i id='Interval'></i>
-    <input id='sliderInterval' type="range" min="0" max="10000" value="1837" oninput="setLoopTime(this.value)"><br> // default values matching the inputs in <script_tone_js class="js"></script_tone_js>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="1837" oninput="setLoopTime(this.value)"><br>
 
     Silence Interval (percentage) <i id='Silence'></i>
-    <input id='sliderInterval' type="range" min="0" max="10000" value="1010" oninput="setSilenceTime(this.value)"><br>// default values matching the inputs in <script_tone_js class="js"></script_tone_js>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="1010" oninput="setSilenceTime(this.value)"><br>
 
     <!-- <h2>Reverb</h2>
     Room Size = <i id='RoomSize'></i><br>
     <input id='sliderInterval' type="range" min="0" max="10000" value="0" oninput="setRoomSize(this.value)"><br> -->
 
+
     <h2>
         <div id = "sse">
-            <a href = "javascript:WebSocketCallback()">Run Sonification</a>
+            <a href = "javascript:WebSocketCallback()">Run WebSocket</a>
         </div>
     </h2>
     <div class="videos" id="videos">
