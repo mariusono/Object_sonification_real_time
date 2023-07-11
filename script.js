@@ -61,6 +61,15 @@ var last_ts = 0;
 var timest_msec_offset = -1;
 let unique_ids_playing = [];
 
+
+// possible notes for the sonifications (in Hz). will be selected randomly upon instantiation
+const baseNotePossibilities = [392,440]
+const baseNotePossibilities_drone = [110,155.56,196]
+
+// const baseNotePossibilities = [43.65,49,55,61.74,77.78,98,110,155.56,185,196,220,311.13,392,440]
+// const baseNotePossibilities = [110,155.56,185,196,220,311.13,392,440]
+// const baseNotePossibilities_drone = [55,110,155.56,196,220]
+
 function doSonification(received_msg) {
 
     var JsonString = JSON.parse(received_msg);
@@ -106,8 +115,10 @@ function doSonification(received_msg) {
                 let baseNoteFreq = baseNotePossibilities_drone[randomNoteIdx_drone];
 
                 if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
-                    sonifiedObjects[unique_id] = new droneSonification(7, baseNoteFreq, "triangle", 1); // needs to be initialized with zero db volume for some reason.. 
+                    sonifiedObjects[unique_id] = new droneSonification(7, baseNoteFreq, "triangle", 1); 
                 }
+
+                // connect the panner of the sonified Object to the freereverb (last in chain before audio out)
                 sonifiedObjects[unique_id].panner.connect(freeverb);
             }
             else if (type_obj.includes('obstacle')) {
@@ -118,49 +129,54 @@ function doSonification(received_msg) {
                 // console.log('NOTE IS + ', notePattern);
 
                 if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
-                    sonifiedObjects[unique_id] = new synthLoopSonification("sawtooth", notePattern, 0); // needs to be initialized with zero db volume for some reason.. 
+                    sonifiedObjects[unique_id] = new synthLoopSonification("sawtooth", notePattern, 0); 
                 }
                 sonifiedObjects[unique_id].panner.connect(freeverb);
             }
+
+            // setting the playing flag to true for this unique id.. 
+            sonifiedObjects[unique_id].playingFlag = true;
         }
 
-        // setting the playing flag to true for this unique id.. 
-        sonifiedObjects[unique_id].playingFlag = true;
+        // // setting the playing flag to true for this unique id.. why here ? 
+        // sonifiedObjects[unique_id].playingFlag = true;
 
         // UPDATE PANNERS 
         let T_map_cam_mat = JSON.parse(JsonString[JsonString_keys[iKeys]]['T_map_cam']);
         let center_3d_sel = [0, 0, 0];
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
             // center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['center_3d']);
-            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']);
+            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']); // taking the nearest 3d point from the cluster insteat of the center point
         }
         else if (sonifiedObjects[unique_id] instanceof droneSonification) {
             center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']);
         }
 
         center_3d_sel.push(1); // in the Python script, I forgot to add the 1 at the end .. 
-        let center_3d_new = [0, 0, 0];
+        let center_3d_new = [0, 0, 0]; // just initializing a list of new coordinates. 
 
+        // Applying the rotation from map to camera ! 
         center_3d_new[0] = T_map_cam_mat[0][0] * center_3d_sel[0] + T_map_cam_mat[0][1] * center_3d_sel[1] + T_map_cam_mat[0][2] * center_3d_sel[2] + T_map_cam_mat[0][3] * center_3d_sel[3];
         center_3d_new[1] = T_map_cam_mat[1][0] * center_3d_sel[0] + T_map_cam_mat[1][1] * center_3d_sel[1] + T_map_cam_mat[1][2] * center_3d_sel[2] + T_map_cam_mat[1][3] * center_3d_sel[3];
         center_3d_new[2] = T_map_cam_mat[2][0] * center_3d_sel[0] + T_map_cam_mat[2][1] * center_3d_sel[1] + T_map_cam_mat[2][2] * center_3d_sel[2] + T_map_cam_mat[2][3] * center_3d_sel[3];
 
+        // Computing the distance to the new point
         let distance_comp = Math.sqrt(center_3d_new[0] * center_3d_new[0] + center_3d_new[1] * center_3d_new[1] + center_3d_new[2] * center_3d_new[2]);
         sonifiedObjects[unique_id].distance = distance_comp;
         
-        if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
-            console.log(distance_comp);
-        }
+        // if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
+        //     console.log(distance_comp);
+        // }
 
-        // do tha actual update
+        // do tha actual update of the panner
         sonifiedObjects[unique_id].panner.setPosition(center_3d_new[0], center_3d_new[1], center_3d_new[2]);
 
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
             // update playback rate!
             sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.2, 1.6]);
 
-            if (distance_comp > 4) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
-            // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+            if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
+            // if (distance_comp > 400) { // just some very large value here but this can be a failsafe about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false; // this is not reupdating.. 
             }
             // IDEA ! ADD DISTANCE TO OBJECT ALSO AS A VARIABLE INSIDE THE CLASSES !!
@@ -170,37 +186,15 @@ function doSonification(received_msg) {
             // update harmonicity.. 
             sonifiedObjects[unique_id].setHarmonicity(distance_comp, [0.5, 1.5]);
 
-            if (distance_comp > 1.5) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+            if (distance_comp > 1.5) { // Only play the object if the distance to it is smaller than 1.5 !! this number can be changed.. 
             // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false;
             }
         }
-
-        // console.log(sonifiedObjects);
-
-
-        // // // I don't really care about this in the sonification.. 
-        // //get timing info
-        // const ts = parseFloat(JsonString[JsonString_keys[0]].ros_timestamp);
-        // var ts_msec = parseInt(ts * 1000); //time stamp is given in seconds
-
-        // if (timest_msec_offset == -1) {
-        //     timest_msec_offset = ts_msec;
-        // }
-
-        // var elapsed_msec = ts_msec - timest_msec_offset;
-
-        // console.log(elapsed_msec); // TOTAL AMOUNT OF TIME THAT PASSED
     }
-
-    // I prepared my sonified objects.. Need to add the loop here
-
-
-
-
 }
 
-
+// The callback carried out when the websocket is connected ! 
 function WebSocketCallback() {
 
     if (doNodeJS) {

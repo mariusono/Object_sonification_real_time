@@ -3,18 +3,9 @@ const fs = require('fs');
 const path = require('path')
 
 // PATH WHERE I HAVE MY JSON FILES
-
-// const DatasetPath = '/Users/mariusonofrei/UNIVERSITY/Univr_Sonification/Object_sonification_via_websocket_data/1_corridoioAltair_newHumanWs/jsons/human_workspace_jsons'
-// const DatasetPath = '/Users/mariusonofrei/UNIVERSITY/Univr_Sonification/Object_sonification_via_websocket_data/1_corridoioAltair_smoothMap2d/jsons/human_workspace_jsons'
-
-
 const DatasetPath = './1_corridoioAltair_smoothMap2d/jsons/human_workspace_jsons'
 // const DatasetPath = './bagchair2_outputs/jsons/human_workspace_jsons'
 
-
-
-// const TfMatricesPath = '1_corridoioAltair_newjsons/tf_saved'
-// Set up a port
 // import websocket.server library
 WebSocketServer = require('ws').Server;
 
@@ -27,7 +18,7 @@ wss = new WebSocketServer({ port: port });
 // just state what port u are listening to
 console.log('listening on port: ' + port);
 
-// Defining a sleep function .. what for ? 
+// Defining a sleep function 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -39,12 +30,6 @@ async function readAndSendData(websocket) {
     
     console.log(jsonsInDir)
 
-    // const tf_jsonsInDir = fs.readdirSync(TfMatricesPath).filter(file => path.extname(file) === '.json');
-    // tf_jsonsInDir.sort((a,b)=>Number(a.split('_')[0]) - Number(b.split('_')[0]));
-    
-    // console.log(tf_jsonsInDir)
-
-    //jsonsInDir.forEach(file => handleSingleFile(file));
     var last_ts = 0.0;
     var event_cnt = 0;
     
@@ -87,22 +72,9 @@ async function readAndSendData(websocket) {
 
         console.log('Ros Timestamp: %d, converted to time %s, elapsed msec %d ', ts, datevalues, elapsed_msec);
         
-        //message=JSON.stringify({ciao: "mondo", d: 19, e: false});
         message=JSON.stringify(JsonString);
         websocket.send(message);
 
-
-        // console.log(message);
-
-        // var JsonString_read = JSON.parse(message);
-
-        // console.log(JsonString_read);
-
-        // console.log(JsonString_read['0']['T_map_cam']);
-        // console.log(JsonString_read['0']['T_map_cam'][0][3]);
-        // // console.log(JSON.parse(JsonString_read['0']['T_map_cam']));
-
-        
         event_cnt+=1;
      }
     }
@@ -120,9 +92,7 @@ wss.on('connection', function connection(ws) {
 
 	console.log('new client connected!');
 	ws.send('connected!');
-    //message=JSON.stringify({ciao: "mondo", d: 19, e: false});
-     
-    // sendData(ws);
+
     readAndSendData(ws);
 });
 

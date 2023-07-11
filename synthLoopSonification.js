@@ -53,40 +53,4 @@ class synthLoopSonification{
         }
         this.valPlaybackPrev = this.valPlayback;
     }
-
-
-    // get synth(){
-    //     return this.synth;
-    // }
-
-    // get loop(){
-    //     return this.loop;
-    // }
-
-    // set connectSynthToNode(node){
-    //     this.synth.connect(node);
-    //     console.log('done')
-    //     console.log(node);
-    // }
-
-    // startLoopNow(){
-    //     this.loop.start(0);
-    // }
-
-    // stopLoopNow(){
-    //     this.loop.stop(0);
-    // }
-
-    // setVolumeRampTo(volume,time){
-    //     this.synth.volume.rampTo(volume,time);
-    //     console.log('here!')
-    // }
-
-    // setVolume(volume){
-    //     this.synth.volume.value = volume;
-    // }
-
-    // setPlaybackRate(rate){
-    //     this.loop.setPlaybackRate(rate);
-    // }
 }

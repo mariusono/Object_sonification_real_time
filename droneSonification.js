@@ -37,16 +37,19 @@ class droneSonification {
             release: 0.05
         });
 
+        // Create a panner
         this.panner = new Tone.Panner3D();
         this.panner.panningModel = 'HRTF';
         this.panner.setPosition(0, 0, 0);
 
+        // Connect oscillators to envelope
         this.oscillators.forEach(o => {
             // o.connect(this.panner);
             o.connect(this.envelope);
-            o.start(); // ARGHHH ! 
+            o.start(); // Start each oscillator ! 
         });
 
+        // Connect envelope to panner
         this.envelope.connect(this.panner); 
     }
 
@@ -56,14 +59,15 @@ class droneSonification {
         if (v > mapInterval[1]) v = mapInterval[1];
 
         let rangeSize = mapInterval[1] - mapInterval[0];
-        let perc_interval = 10;
+        let perc_interval = 10; // only change the harmonicity in intervals of 10% of the input range. 
 
         v = Math.floor(v / (perc_interval * rangeSize / 100)) * (perc_interval * rangeSize / 100);
         if (v < mapInterval[0]) v = mapInterval[0];
         if (v > mapInterval[1]) v = mapInterval[1];
 
         // this.valHarmonicity = linearMapping(1.0, 2.0, mapInterval[1], mapInterval[0], v);
-        this.valHarmonicity = exponentialMapping(1.0, 4.0, mapInterval[1], mapInterval[0], 8.0, v);
+        
+        this.valHarmonicity = exponentialMapping(1.0, 4.0, mapInterval[1], mapInterval[0], 8.0, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
         // valPlayback = exponentialMapping(0.0, 4.0, 0, 1000, 3., v);
 
         if (this.valHarmonicity !== this.valHarmonicityPrev) {

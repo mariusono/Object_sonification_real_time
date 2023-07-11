@@ -7,15 +7,6 @@ let flag_audio_on_off = false; // initialize global audio on/off flag
 let flagAllSounds = false;
 let flagAllSounds_reset = false;
 
-// Synth pattern:
-// Loop for synth 
-
-// const baseNotePossibilities = [43.65,49,55,61.74,77.78,98,110,155.56,185,196,220,311.13,392,440]
-// const baseNotePossibilities = [110,155.56,185,196,220,311.13,392,440]
-const baseNotePossibilities = [392,440]
-// const baseNotePossibilities_drone = [55,110,155.56,196,220]
-const baseNotePossibilities_drone = [110,155.56,196]
-
 // create reverb node
 const freeverb = new Tone.Freeverb(0.3,5000);
 
