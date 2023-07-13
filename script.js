@@ -1,6 +1,17 @@
 // either run via websocket with nodeJS or with ROS 
+
+const checkbox_real_time = document.getElementById("checkbox_real_time");
+
+
+
 let doNodeJS = true;
 let doROS = !doNodeJS;
+
+checkbox_real_time.addEventListener("change", () => {
+    doNodeJS = !doNodeJS;
+    doROS = !doNodeJS;
+    console.log(doNodeJS);
+});
 
 // document objects
 const boxVideos = document.getElementById('videos');

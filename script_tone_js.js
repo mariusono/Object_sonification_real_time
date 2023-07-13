@@ -161,7 +161,6 @@ checkbox_sounds.addEventListener("change", () => {
 });
 
 
-
 //attach a click listener to a play button
 const button_1 = document.getElementById("button_1");
 const button_2 = document.getElementById("button_2");
@@ -183,7 +182,7 @@ button_2.addEventListener("click", async () => {
     console.log("stopping all sounds!");
 
     Tone.Transport.stop(); // this just stops the master time.. 
- 
+
 });
 
 
