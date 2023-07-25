@@ -86,7 +86,11 @@ function loopStep(time){
         }
         else if (objectsNotPlaying[i] instanceof synthLoopSonification)
         {
-            objectsNotPlaying[i].loop.stop(); // start the synthSonification loop
+            objectsNotPlaying[i].loop.stop(); // stop the synthSonification loop
+        }
+        else if (objectsNotPlaying[i] instanceof samplerLoopSonification)
+        {
+            objectsNotPlaying[i].stopLoop(); 
         }
     }   
 
@@ -104,6 +108,10 @@ function loopStep(time){
             {
                 objectsPlaying[i].loop.stop(); // start the synthSonification loop
             }
+            else if (objectsNotPlaying[i] instanceof samplerLoopSonification)
+            {
+                objectsNotPlaying[i].stopLoop(); 
+            }
         }   
         flagAllSounds_reset = false;
     }
@@ -111,6 +119,7 @@ function loopStep(time){
     // console.log(objectsPlaying);
     if (flagAllSounds)
     {
+        // OBSERVATION: THIS LOOP IS KINDA BAD. IT STARTS SOUNDS EVEN IF SOUNDS ARE ALREADY ON.. ? 
         for (let i = 0;i<objectsPlaying.length;i++)
         {
             if (objectsPlaying[i] instanceof droneSonification)
@@ -121,6 +130,14 @@ function loopStep(time){
             else if (objectsPlaying[i] instanceof synthLoopSonification)
             {
                 objectsPlaying[i].loop.start(); // start the synthSonification loop
+                // objectsPlaying[i].loop.stop('+'+String(loopGlobal.interval/2)); // start the synthSonification loop
+            }
+            else if (objectsPlaying[i] instanceof samplerLoopSonification)
+            {
+                console.log(objectsPlaying[i].flagOn);
+                if (objectsPlaying[i].flagOn == false){
+                    objectsPlaying[i].restartLoop(); // start the synthSonification loop
+                }
                 // objectsPlaying[i].loop.stop('+'+String(loopGlobal.interval/2)); // start the synthSonification loop
             }
         }     
@@ -145,6 +162,16 @@ function loopStep(time){
                 // objectsPlaying[count].loop.stop('+1n'); // close it at a future time.. 
                 objectsPlaying[count].loop.stop('+'+String(intervalVal-silenceTime)); // close it at a future time.. 
                 // console.log(silenceTime);
+            }
+            else if (objectsPlaying[count] instanceof samplerLoopSonification)
+            {
+                // objectsPlaying[count].startLoop('+0'); // start the synthSonification loop
+                console.log(objectsPlaying[count].flagOn);
+                if (objectsPlaying[count].flagOn == false){
+                    objectsPlaying[count].restartLoop(); // start the synthSonification loop
+                }   
+                objectsPlaying[count].stopLoop(1000 * (intervalVal-silenceTime));
+
             }
             count = count + 1;
         }
