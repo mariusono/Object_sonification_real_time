@@ -51,4 +51,8 @@ function deg2rad(value) {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+function delay(time_ms) {
+    return new Promise(resolve => setTimeout(resolve, time_ms));
+}
 //---------------------------------------------------------------------------------------------------------------

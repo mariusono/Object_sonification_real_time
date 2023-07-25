@@ -13,6 +13,9 @@ checkbox_real_time.addEventListener("change", () => {
     console.log(doNodeJS);
 });
 
+let flagUseSynthLoop = false;
+let flagUseSampleLoop = true;
+
 // document objects
 const boxVideos = document.getElementById('videos');
 const video_rgb = document.createElement('video');
@@ -133,16 +136,32 @@ function doSonification(received_msg) {
                 sonifiedObjects[unique_id].panner.connect(freeverb);
             }
             else if (type_obj.includes('obstacle')) {
-                let randomNoteIdx = Math.floor(0 + Math.random() * (baseNotePossibilities.length - 0));
-                let baseNote = baseNotePossibilities[randomNoteIdx];
-                let notePattern = [baseNote]; 
+                if (flagUseSynthLoop){
+                    let randomNoteIdx = Math.floor(0 + Math.random() * (baseNotePossibilities.length - 0));
+                    let baseNote = baseNotePossibilities[randomNoteIdx];
+                    let notePattern = [baseNote]; 
 
-                // console.log('NOTE IS + ', notePattern);
+                    // console.log('NOTE IS + ', notePattern);
 
-                if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
-                    sonifiedObjects[unique_id] = new synthLoopSonification("sawtooth", notePattern, 0); 
+                    if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
+                        sonifiedObjects[unique_id] = new synthLoopSonification("sawtooth", notePattern, 0); 
+                    }
+                    sonifiedObjects[unique_id].panner.connect(freeverb);
                 }
-                sonifiedObjects[unique_id].panner.connect(freeverb);
+                else if (flagUseSampleLoop){
+
+                    // let fileName = "glass_3.wav";
+                    let fileName = "glass_1.wav";
+                    let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
+                    let noteVal = 440;
+                    console.log(Tone.Transport.bpm.value);
+                    let interval_sound = Tone.Time('16n').toSeconds();
+
+                    if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
+                        sonifiedObjects[unique_id] = new samplerLoopSonification(fileName,urlName, noteVal, interval_sound);
+                    }
+                    sonifiedObjects[unique_id].panner.connect(freeverb);
+                }
             }
 
             // setting the playing flag to true for this unique id.. 
@@ -162,6 +181,9 @@ function doSonification(received_msg) {
         else if (sonifiedObjects[unique_id] instanceof droneSonification) {
             center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']);
         }
+        else if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
+            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']); // should I take the center_3d instead ?? 
+        }
 
         center_3d_sel.push(1); // in the Python script, I forgot to add the 1 at the end .. 
         let center_3d_new = [0, 0, 0]; // just initializing a list of new coordinates. 
@@ -173,7 +195,7 @@ function doSonification(received_msg) {
 
         // Computing the distance to the new point
         let distance_comp = Math.sqrt(center_3d_new[0] * center_3d_new[0] + center_3d_new[1] * center_3d_new[1] + center_3d_new[2] * center_3d_new[2]);
-        sonifiedObjects[unique_id].distance = distance_comp;
+        sonifiedObjects[unique_id].distance = distance_comp; // not really needed.. 
         
         // if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
         //     console.log(distance_comp);
@@ -194,10 +216,25 @@ function doSonification(received_msg) {
 
         }
         else if (sonifiedObjects[unique_id] instanceof droneSonification) {
+
+            // sonifiedObjects[unique_id].playingFlag = false;
+
             // update harmonicity.. 
             sonifiedObjects[unique_id].setHarmonicity(distance_comp, [0.5, 1.5]);
 
             if (distance_comp > 1.5) { // Only play the object if the distance to it is smaller than 1.5 !! this number can be changed.. 
+            // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+                    sonifiedObjects[unique_id].playingFlag = false;
+            }
+        }
+        else if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
+
+            console.log(center_3d_sel);
+
+            // update harmonicity.. 
+            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.2, 1.6]);
+
+            if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
             // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false;
             }

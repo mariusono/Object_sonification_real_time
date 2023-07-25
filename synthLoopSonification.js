@@ -7,7 +7,7 @@ class synthLoopSonification{
         this.valPlaybackPrev = 1;
 
         this.playingFlag = false;
-        this.distance = 1000; // some very large value to begin with.. 
+        this.distance = 1000; // some very large value to begin with..  NOT NEEDED ! 
 
         this.synth = new Tone.Synth({
             oscillator: {
