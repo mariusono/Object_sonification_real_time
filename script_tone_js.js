@@ -7,14 +7,14 @@ let flag_audio_on_off = false; // initialize global audio on/off flag
 let flagAllSounds = false;
 let flagAllSounds_reset = false;
 
-// create reverb node
-const freeverb = new Tone.Freeverb(0.3,5000);
+// // create reverb node
+// const freeverb = new Tone.Freeverb(0.3,5000);
 
 // create a gain node
 const gainNode = new Tone.Gain(db2mag(-12.0));
 
-//connect freeverb to gain
-freeverb.connect(gainNode); // synth goes to gain !
+// //connect freeverb to gain
+// freeverb.connect(gainNode); // synth goes to gain !
 
 // send gain to audio destination (audio out)
 gainNode.toDestination();
@@ -73,9 +73,9 @@ function loopStep(time){
         }
     }
 
-    console.log(flagAllSounds);
-    console.log(objectsPlaying);
-    console.log(objectsNotPlaying);
+    // console.log(flagAllSounds);
+    // console.log(objectsPlaying);
+    // console.log(objectsNotPlaying);
 
     // make sure objects that are not playing are stopped.. 
     for (let i = 0;i<objectsNotPlaying.length;i++)
@@ -166,7 +166,7 @@ function loopStep(time){
             else if (objectsPlaying[count] instanceof samplerLoopSonification)
             {
                 // objectsPlaying[count].startLoop('+0'); // start the synthSonification loop
-                console.log(objectsPlaying[count].flagOn);
+                // console.log(objectsPlaying[count].flagOn);
                 if (objectsPlaying[count].flagOn == false){
                     objectsPlaying[count].restartLoop(); // start the synthSonification loop
                 }   
@@ -217,7 +217,7 @@ button_2.addEventListener("click", async () => {
 
 function setGain(v) {
     let gainVal = linearMapping(-30.0, 10.0, 0, 10000, v); // db linear Scale
-    console.log("HERE!!" + v);
+    // console.log("HERE!!" + v);
     let gainVal_amp = 10 ** (gainVal / 20);
     if (gainVal_amp < 0.0316 + 0.0001) { // equivalent of -30 dB + 0.0001
         gainVal_amp = 0;
@@ -242,7 +242,7 @@ function setSilenceTime(v) {
     document.getElementById('Silence').innerText = parseFloat(silenceTimePerc).toFixed(4);
     // gainNode.gain.value = gainVal;
     silenceTime = intervalVal * silenceTimePerc / 100;
-    console.log(silenceTime);
+    // console.log(silenceTime);
 
 }
 

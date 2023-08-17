@@ -51,6 +51,14 @@ class droneSonification {
 
         // Connect envelope to panner
         this.envelope.connect(this.panner); 
+
+        // create reverb node
+        this.freeverb = new Tone.Freeverb(0.3,5000);
+        this.panner.connect(this.freeverb);
+
+        // this.freeverb = new Tone.Reverb(1.0);
+        // this.panner.connect(this.freeverb);
+
     }
 
     setHarmonicity(v,mapInterval) {
@@ -78,6 +86,21 @@ class droneSonification {
         }
 
         this.valHarmonicityPrev = this.valHarmonicity;
+    }
+
+    setRoomSize(v, mapInterval) {
+        if (v < mapInterval[0]) v = mapInterval[0];
+        if (v > mapInterval[1]) v = mapInterval[1];
+
+        let roomSize = exponentialMapping(0.05, 0.75, mapInterval[0], mapInterval[1], -1.5, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
+        
+        console.log(roomSize);
+        this.freeverb.roomSize.value = roomSize;
+        // this.freeverb.roomSize.value = 0.7;
+        this.freeverb.wet.value = 0.5;
+
+        // let roomSize = exponentialMapping(0.5, 3.0, mapInterval[0], mapInterval[1], 2.0, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
+        // this.freeverb.decay = roomSize;
     }
 }
 

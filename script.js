@@ -76,6 +76,9 @@ var timest_msec_offset = -1;
 let unique_ids_playing = [];
 
 
+let maxDistance_comp = 0;
+let minDistance_comp = 100;
+
 // possible notes for the sonifications (in Hz). will be selected randomly upon instantiation
 const baseNotePossibilities = [392,440]
 const baseNotePossibilities_drone = [110,155.56,196]
@@ -133,7 +136,7 @@ function doSonification(received_msg) {
                 }
 
                 // connect the panner of the sonified Object to the freereverb (last in chain before audio out)
-                sonifiedObjects[unique_id].panner.connect(freeverb);
+                sonifiedObjects[unique_id].freeverb.connect(gainNode);
             }
             else if (type_obj.includes('obstacle')) {
                 if (flagUseSynthLoop){
@@ -146,21 +149,21 @@ function doSonification(received_msg) {
                     if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
                         sonifiedObjects[unique_id] = new synthLoopSonification("sawtooth", notePattern, 0); 
                     }
-                    sonifiedObjects[unique_id].panner.connect(freeverb);
+                    sonifiedObjects[unique_id].freeverb.connect(gainNode);
                 }
                 else if (flagUseSampleLoop){
 
-                    // let fileName = "glass_3.wav";
-                    let fileName = "glass_1.wav";
+                    let fileName = "glass_3.wav";
+                    //let fileName = "glass_1.wav";
                     let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
                     let noteVal = 440;
-                    console.log(Tone.Transport.bpm.value);
+                    // console.log(Tone.Transport.bpm.value);
                     let interval_sound = Tone.Time('16n').toSeconds();
 
                     if (!sonifiedObjects.hasOwnProperty(unique_id)) { // only create a new sonification if it hasn't already been created
                         sonifiedObjects[unique_id] = new samplerLoopSonification(fileName,urlName, noteVal, interval_sound);
                     }
-                    sonifiedObjects[unique_id].panner.connect(freeverb);
+                    sonifiedObjects[unique_id].freeverb.connect(gainNode);
                 }
             }
 
@@ -207,6 +210,11 @@ function doSonification(received_msg) {
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
             // update playback rate!
             sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.2, 1.6]);
+            sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.5, 1.5]); // input distance.. 
+
+            // sonifiedObjects[unique_id].playingFlag = false;
+
+            // console.log("synth object distance is: " + distance_comp);
 
             if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
             // if (distance_comp > 400) { // just some very large value here but this can be a failsafe about the radius of the human workspace.. 
@@ -221,18 +229,30 @@ function doSonification(received_msg) {
 
             // update harmonicity.. 
             sonifiedObjects[unique_id].setHarmonicity(distance_comp, [0.5, 1.5]);
+            sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.5, 2.0]);
 
-            if (distance_comp > 1.5) { // Only play the object if the distance to it is smaller than 1.5 !! this number can be changed.. 
+            // console.log("drone object distance is: " + distance_comp);
+
+            if (distance_comp > 2.0) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
             // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false;
             }
         }
         else if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
 
-            console.log(center_3d_sel);
+            // console.log(center_3d_sel);
 
             // update harmonicity.. 
-            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.2, 1.6]);
+            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.0, 2.0]);
+            sonifiedObjects[unique_id].setRoomSize(distance_comp, [1.0, 2.0]);
+
+            console.log("sampler object distance is: " + distance_comp);
+
+            if (distance_comp > maxDistance_comp) maxDistance_comp = distance_comp;
+            if (distance_comp < minDistance_comp) minDistance_comp = distance_comp;
+
+            console.log("sampler object max distance is: " + maxDistance_comp);
+            console.log("sampler object min distance is: " + minDistance_comp);
 
             if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
             // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
@@ -318,7 +338,7 @@ function WebSocketCallback() {
 
         var json_walls_equations_sub = new ROSLIB.Topic({ ros: ros, name: '/out/json_walls_equations', messageType: 'std_msgs/String' });
         json_walls_equations_sub.subscribe(function (message) {
-            console.log(message.data)
+            // console.log(message.data)
             var JsonString = JSON.parse(message.data);
             let JsonString_keys = Object.keys(JsonString);
 

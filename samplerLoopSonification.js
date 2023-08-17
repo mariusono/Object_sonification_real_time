@@ -29,6 +29,11 @@ class samplerLoopSonification{
         this.sampler.volume.value = -6;
 
         this.sampler.connect(this.panner);
+
+        // this.freeverb = new Tone.Reverb(1.0);
+        this.freeverb = new Tone.Freeverb(0.3,5000);
+        this.panner.connect(this.freeverb);
+
     }
  
 
@@ -41,7 +46,7 @@ class samplerLoopSonification{
             // console.log(this.interval_sound);
             if (this.flagOn)
             {
-                console.log(time);
+                // console.log(time);
                 this.sampler.triggerAttackRelease(this.noteVal, this.interval_sound, time); // '8n' plays every 8th note at a default bpm (120).. 
     
                 //schedule the next event relative to the current time by prefixing "+"
@@ -90,14 +95,29 @@ class samplerLoopSonification{
         this.valPlayback = exponentialMapping(0.5, 3.0, mapInterval[1], mapInterval[0], 8.0, v);
 
         if (this.valPlayback !== this.valPlaybackPrev) {
-            console.log(this.valPlayback );
+            // console.log(this.valPlayback );
             let newVal = this.interval_sound_init / this.valPlayback; // do not overwrite the onld interval_sound.. 
             this.updateInterval(newVal);
         }
         this.valPlaybackPrev = this.valPlayback;
     }
 
-    setNote(v,mapInterval) {
+    setRoomSize(v, mapInterval) {
+        if (v < mapInterval[0]) v = mapInterval[0];
+        if (v > mapInterval[1]) v = mapInterval[1];
+
+        let roomSize = exponentialMapping(0.05, 0.75, mapInterval[0], mapInterval[1], -1.5, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
+        
+        console.log(roomSize);
+        this.freeverb.roomSize.value = roomSize;
+        // this.freeverb.roomSize.value = 0.7;
+        this.freeverb.wet.value = 0.5;
+
+        // let roomSize = exponentialMapping(0.5, 3.0, mapInterval[0], mapInterval[1], 2.0, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
+        // this.freeverb.decay = 5.0;
+    }
+
+    setNote(v,mapInterval) { // TO DO ?! 
 
     }
 
