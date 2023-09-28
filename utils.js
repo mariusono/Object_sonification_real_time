@@ -55,4 +55,16 @@ function sleep(ms) {
 function delay(time_ms) {
     return new Promise(resolve => setTimeout(resolve, time_ms));
 }
+
+function findLastSmallerValueIndex(B, a) {
+    let lastSmaller = B[0];
+
+    for (let i = 0; i < B.length; i++) {
+        if (B[i] <= a) {
+            lastIndex = i;
+        }
+    }
+
+    return lastIndex;
+}
 //---------------------------------------------------------------------------------------------------------------

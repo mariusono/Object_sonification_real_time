@@ -7,6 +7,8 @@ const checkbox_real_time = document.getElementById("checkbox_real_time");
 let doNodeJS = true;
 let doROS = !doNodeJS;
 
+let useVideos = false;
+
 checkbox_real_time.addEventListener("change", () => {
     doNodeJS = !doNodeJS;
     doROS = !doNodeJS;
@@ -30,24 +32,41 @@ const img_walls = document.createElement('img');
 
 
 if (doNodeJS) {
-    video_rgb.src = './1_corridoioAltair_smoothMap2d/videos/rgb.mp4#t=7';
-    // video_rgb.src = './bagchair2_outputs/rgb.mp4'
-    video_rgb.id = 'videoPlayer_rgb';
-    video_rgb.controls = true;
-    video_rgb.muted = false;
-    video_rgb.height = 400; // in px
-    // video_rgb.width = 640; // in px
+    if (useVideos){
+        video_rgb.src = './data_27_sett/vivavis_scenario3-2023-09-27_14.47.44.mp4';
+        video_rgb.id = 'videoPlayer_rgb';
+        video_rgb.controls = true;
+        video_rgb.muted = false;
+        video_rgb.height = 400; // in px
+        // video_rgb.width = 640; // in px
 
-    video_map2d.src = './1_corridoioAltair_smoothMap2d/videos/map2d.mp4#t=7';
-    // video_map2d.src = './bagchair2_outputs/map2d.mp4'
-    video_map2d.id = 'videoPlayer_map2d';
-    video_map2d.controls = true;
-    video_map2d.muted = false;
-    video_map2d.height = 400; // in px
-    // video_map2d.width = 640; // in px
+        // video_map2d.src = './1_corridoioAltair_smoothMap2d/videos/map2d.mp4#t=7';
+        // // video_map2d.src = './bagchair2_outputs/map2d.mp4'
+        // video_map2d.id = 'videoPlayer_map2d';
+        // video_map2d.controls = true;
+        // video_map2d.muted = false;
+        // video_map2d.height = 400; // in px
+        // // video_map2d.width = 640; // in px
 
-    boxVideos.appendChild(video_rgb);
-    boxVideos.appendChild(video_map2d);
+        boxVideos.appendChild(video_rgb);
+        // boxVideos.appendChild(video_map2d);
+    }else{
+        img_rgb.id = 'img_rgb';
+        img_rgb.style = 'height:400px; object-fit:contain';
+        img_rgb.src = "";
+    
+        img_map2d.id = 'img_map2d';
+        img_map2d.style = 'height:400px; object-fit:contain';
+        img_map2d.src = "";
+    
+        img_walls.id = 'img_walls';
+        img_walls.style = 'height:400px; object-fit:contain';
+        img_walls.src = "";
+    
+        boxVideos.appendChild(img_rgb);
+        boxVideos.appendChild(img_rgb);
+        boxVideos.appendChild(img_walls);
+    }
 }
 else {
 
@@ -89,7 +108,11 @@ const baseNotePossibilities_drone = [110,155.56,196]
 
 function doSonification(received_msg) {
 
+    // console.log(received_msg);
+
     var JsonString = JSON.parse(received_msg);
+
+    // console.log(JsonString);
 
     let JsonString_keys = Object.keys(JsonString);
 
@@ -122,6 +145,9 @@ function doSonification(received_msg) {
     for (var iKeys = 0; iKeys < JsonString_keys.length; iKeys++) {
         let unique_id = JsonString[JsonString_keys[iKeys]]['unique_id'];
         let type_obj = JsonString[JsonString_keys[iKeys]]['type'];
+        let timestamp = JsonString[JsonString_keys[iKeys]]['ros_timestamp'];
+
+        console.log(timestamp);
 
         if (!unique_ids_playing.includes(unique_id)) { // if current unique Id is not in already playing unique ids 
 
@@ -153,8 +179,8 @@ function doSonification(received_msg) {
                 }
                 else if (flagUseSampleLoop){
 
-                    let fileName = "glass_3.wav";
-                    //let fileName = "glass_1.wav";
+                    // let fileName = "glass_3.wav";
+                    let fileName = "glass_1.wav";
                     let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
                     let noteVal = 440;
                     // console.log(Tone.Transport.bpm.value);
@@ -185,7 +211,8 @@ function doSonification(received_msg) {
             center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']);
         }
         else if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
-            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']); // should I take the center_3d instead ?? 
+            // center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']); // should I take the center_3d instead ?? 
+            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['center_3d']); // should I take the center_3d instead ?? 
         }
 
         center_3d_sel.push(1); // in the Python script, I forgot to add the 1 at the end .. 
@@ -200,9 +227,10 @@ function doSonification(received_msg) {
         let distance_comp = Math.sqrt(center_3d_new[0] * center_3d_new[0] + center_3d_new[1] * center_3d_new[1] + center_3d_new[2] * center_3d_new[2]);
         sonifiedObjects[unique_id].distance = distance_comp; // not really needed.. 
         
-        // if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
-        //     console.log(distance_comp);
-        // }
+        if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
+            console.log(distance_comp);
+            console.log(center_3d_new);
+        }
 
         // do tha actual update of the panner
         sonifiedObjects[unique_id].panner.setPosition(center_3d_new[0], center_3d_new[1], center_3d_new[2]);
@@ -243,14 +271,15 @@ function doSonification(received_msg) {
             // console.log(center_3d_sel);
 
             // update harmonicity.. 
-            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.0, 2.0]);
+            // sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.0, 2.0]); // mapInterval is [lowerBound, upperBound]
+            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [0.01, 2.0]); // mapInterval is [lowerBound, upperBound]
             sonifiedObjects[unique_id].setRoomSize(distance_comp, [1.0, 2.0]);
 
-            console.log("sampler object distance is: " + distance_comp);
+            // console.log("sampler object distance is: " + distance_comp);
 
+            // Check the biggerst and smallest distance to obstacles.. for calibration
             if (distance_comp > maxDistance_comp) maxDistance_comp = distance_comp;
             if (distance_comp < minDistance_comp) minDistance_comp = distance_comp;
-
             console.log("sampler object max distance is: " + maxDistance_comp);
             console.log("sampler object min distance is: " + minDistance_comp);
 
@@ -267,28 +296,57 @@ function WebSocketCallback() {
 
     if (doNodeJS) {
         video_rgb.play();
-        video_map2d.play();
+        // video_map2d.play();
 
         var port = 9090;
 
         var ws = new WebSocket("ws://localhost:" + port + "/echo");
 
         ws.onmessage = function (evt) {
-            let received_msg = evt.data;
-            // console.log(received_msg);
-            doSonification(received_msg);
+            if (typeof evt.data === 'string'){
+                let received_msg = evt.data;
+                // console.log(received_msg);
+                doSonification(received_msg);
 
-            var JsonString = JSON.parse(received_msg);
-            let JsonString_keys = Object.keys(JsonString);
+                var JsonString = JSON.parse(received_msg);
+                let JsonString_keys = Object.keys(JsonString);
 
-            span_human_html = "<h2><i>Human workspace info:</i></h2>"; // init html string
-            for (var iKeys = 0; iKeys < JsonString_keys.length; iKeys++) {
-                span_human_html+="<b>unique_id: </b>"+JsonString[JsonString_keys[iKeys]]['unique_id']
-                                //+"</br> <b>Timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['timestamp']
-                                +"</br> <b>center_3d: </b>"+JsonString[JsonString_keys[iKeys]]['center_3d']
-                                +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
-            }       
-            document.getElementById("span_human").innerHTML = span_human_html; // print on html
+                span_human_html = "<h2><i>Human workspace info:</i></h2>"; // init html string
+                for (var iKeys = 0; iKeys < JsonString_keys.length; iKeys++) {
+                    span_human_html+="<b>unique_id: </b>"+JsonString[JsonString_keys[iKeys]]['unique_id']
+                                    //+"</br> <b>Timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['timestamp']
+                                    +"</br> <b>center_3d: </b>"+JsonString[JsonString_keys[iKeys]]['center_3d']
+                                    +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
+                }       
+                document.getElementById("span_human").innerHTML = span_human_html; // print on html
+
+            }else if ((evt.data instanceof Blob) && (!useVideos)) {
+
+                // Handle the received binary data (e.g., .png image)
+                var imageURL = URL.createObjectURL(evt.data);
+                document.getElementById('img_rgb').src = imageURL;
+
+                // document.body.appendChild(img);
+            }
+
+            // // Reference: https://roboticsknowledgebase.com/wiki/tools/roslibjs/
+            // // rosrun image_transport republish raw in:=camera/rgb/image_rect_color out:=camera/rgb
+            // var img_rgb_sub = new ROSLIB.Topic({ ros: ros, name: '/camera/rgb/compressed', messageType: 'sensor_msgs/CompressedImage' });
+            // img_rgb_sub.subscribe(function (message) {
+            //     document.getElementById('img_rgb').src = "data:image/jpg;base64," + message.data;
+            // });
+
+            // // rosrun image_transport republish raw in:=out/map2d_img1 out:=out/map2d
+            // var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/map2d/compressed', messageType: 'sensor_msgs/CompressedImage' });
+            // img_map2d_sub.subscribe(function (message) {
+            //     document.getElementById('img_map2d').src = "data:image/jpg;base64," + message.data;
+            // });
+
+            // // rosrun image_transport republish raw in:=out/walls_img out:=out/walls
+            // var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/walls/compressed', messageType: 'sensor_msgs/CompressedImage' });
+            // img_map2d_sub.subscribe(function (message) {
+            //     document.getElementById('img_walls').src = "data:image/jpg;base64," + message.data;
+            // });
         }
 
         ws.onclose = function () {
@@ -331,7 +389,6 @@ function WebSocketCallback() {
                                         +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
                     }       
                     document.getElementById("span_human").innerHTML = span_human_html; // print on html
-            
                 })
             }
         );
@@ -375,4 +432,10 @@ function WebSocketCallback() {
         });
     }
 }
+
+
+
+
+
+
 
