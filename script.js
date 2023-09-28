@@ -1,19 +1,7 @@
-// either run via websocket with nodeJS or with ROS 
-
-const checkbox_real_time = document.getElementById("checkbox_real_time");
-
-
-
+//FLAGS:
 let doNodeJS = true;
 let doROS = !doNodeJS;
-
 let useVideos = false;
-
-checkbox_real_time.addEventListener("change", () => {
-    doNodeJS = !doNodeJS;
-    doROS = !doNodeJS;
-    console.log(doNodeJS);
-});
 
 let flagUseSynthLoop = false;
 let flagUseSampleLoop = true;
@@ -30,6 +18,14 @@ const img_rgb = document.createElement('img');
 const img_map2d = document.createElement('img');
 const img_walls = document.createElement('img');
 
+const checkbox_real_time = document.getElementById("checkbox_real_time");
+
+
+checkbox_real_time.addEventListener("change", () => {
+    doNodeJS = !doNodeJS;
+    doROS = !doNodeJS;
+    console.log(doNodeJS);
+});
 
 if (doNodeJS) {
     if (useVideos){
