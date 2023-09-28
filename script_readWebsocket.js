@@ -12,6 +12,10 @@ function findLastSmallerValueIndex(B, a) {
 
     return lastIndex;
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 //-------------------------------------------------------------------
 
 // FLAGS
@@ -38,11 +42,6 @@ wss = new WebSocketServer({ port: port });
 
 // just state what port u are listening to
 console.log('listening on port: ' + port);
-
-// Defining a sleep function 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function readAndSendData(websocket) {
 
