@@ -302,6 +302,8 @@ function WebSocketCallback() {
             if (typeof evt.data === 'string'){
                 let received_msg = evt.data;
                 // console.log(received_msg);
+
+                // SONIFICATION BASED ON EACH HUMAN_WORKSPACE.JSON FILE! 
                 doSonification(received_msg);
 
                 var JsonString = JSON.parse(received_msg);
@@ -325,24 +327,6 @@ function WebSocketCallback() {
                 // document.body.appendChild(img);
             }
 
-            // // Reference: https://roboticsknowledgebase.com/wiki/tools/roslibjs/
-            // // rosrun image_transport republish raw in:=camera/rgb/image_rect_color out:=camera/rgb
-            // var img_rgb_sub = new ROSLIB.Topic({ ros: ros, name: '/camera/rgb/compressed', messageType: 'sensor_msgs/CompressedImage' });
-            // img_rgb_sub.subscribe(function (message) {
-            //     document.getElementById('img_rgb').src = "data:image/jpg;base64," + message.data;
-            // });
-
-            // // rosrun image_transport republish raw in:=out/map2d_img1 out:=out/map2d
-            // var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/map2d/compressed', messageType: 'sensor_msgs/CompressedImage' });
-            // img_map2d_sub.subscribe(function (message) {
-            //     document.getElementById('img_map2d').src = "data:image/jpg;base64," + message.data;
-            // });
-
-            // // rosrun image_transport republish raw in:=out/walls_img out:=out/walls
-            // var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/walls/compressed', messageType: 'sensor_msgs/CompressedImage' });
-            // img_map2d_sub.subscribe(function (message) {
-            //     document.getElementById('img_walls').src = "data:image/jpg;base64," + message.data;
-            // });
         }
 
         ws.onclose = function () {
