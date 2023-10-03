@@ -29,7 +29,7 @@ checkbox_real_time.addEventListener("change", () => {
 
 if (doNodeJS) {
     if (useVideos){
-        video_rgb.src = './data_28_sett/vivavis_scenario3-2023-09-28_18.17.55.mp4';
+        video_rgb.src = './data_2_ott/vivavis_rviz_scenario3-2023-10-02_12.23.54.mp4';
         video_rgb.id = 'videoPlayer_rgb';
         video_rgb.controls = true;
         video_rgb.muted = false;
@@ -241,8 +241,8 @@ function doSonification(received_msg) {
         sonifiedObjects[unique_id].distance = distance_comp; // not really needed.. 
         
         if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
-            console.log(distance_comp);
-            console.log(center_3d_new);
+            // console.log(distance_comp);
+            // console.log(center_3d_new);
         }
 
         // do tha actual update of the panner
@@ -299,8 +299,8 @@ function doSonification(received_msg) {
             // Check the biggerst and smallest distance to obstacles.. for calibration
             if (distance_comp > maxDistance_comp) maxDistance_comp = distance_comp;
             if (distance_comp < minDistance_comp) minDistance_comp = distance_comp;
-            console.log("sampler object max distance is: " + maxDistance_comp);
-            console.log("sampler object min distance is: " + minDistance_comp);
+            // console.log("sampler object max distance is: " + maxDistance_comp);
+            // console.log("sampler object min distance is: " + minDistance_comp);
 
             // if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
             if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
