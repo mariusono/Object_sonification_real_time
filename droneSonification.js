@@ -6,6 +6,7 @@ class droneSonification {
 
         this.playingFlag = false;
         this.distance = 1000; // some very large value to begin with.. 
+        this.panning_3d_point = [0,0,0]; // initial value
 
 
         this.volumesArray = [...Array(this.numOscillators).keys()].map(i => 1 / (i + 1));
@@ -41,6 +42,7 @@ class droneSonification {
         this.panner = new Tone.Panner3D();
         this.panner.panningModel = 'HRTF';
         this.panner.setPosition(0, 0, 0);
+        this.panner.refDistance = 0.3; // IMPORTANT!
 
         // Connect oscillators to envelope
         this.oscillators.forEach(o => {
@@ -96,8 +98,8 @@ class droneSonification {
         
         // console.log(roomSize);
         this.freeverb.roomSize.value = roomSize;
-        // this.freeverb.roomSize.value = 0.7;
-        this.freeverb.wet.value = 0.5;
+        // this.freeverb.roomSize.value = 0.5;
+        this.freeverb.wet.value = 0.0;
 
         // let roomSize = exponentialMapping(0.5, 3.0, mapInterval[0], mapInterval[1], 2.0, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
         // this.freeverb.decay = roomSize;

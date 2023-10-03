@@ -29,7 +29,7 @@ checkbox_real_time.addEventListener("change", () => {
 
 if (doNodeJS) {
     if (useVideos){
-        video_rgb.src = './data_27_sett/vivavis_scenario3-2023-09-27_14.47.44.mp4';
+        video_rgb.src = './data_28_sett/vivavis_scenario3-2023-09-28_18.17.55.mp4';
         video_rgb.id = 'videoPlayer_rgb';
         video_rgb.controls = true;
         video_rgb.muted = false;
@@ -87,6 +87,7 @@ else {
 
 // Prep doSonification 
 var last_ts = 0;
+let currentTimeStamp = 0;
 var timest_msec_offset = -1;
 let unique_ids_playing = [];
 
@@ -96,7 +97,19 @@ let minDistance_comp = 100;
 
 // possible notes for the sonifications (in Hz). will be selected randomly upon instantiation
 const baseNotePossibilities = [392,440]
-const baseNotePossibilities_drone = [110,155.56,196]
+const baseNotePossibilities_drone = [55, 75, 110,155.56,196]
+
+// possible samples:
+let audioSamples_array = ["glass_1.wav",
+                          "glass_2.wav",
+                          "glass_3.wav",
+                          "knock.wav",
+                          "drone.wav",
+                          "violin_1.wav"];
+
+// samples url:
+let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
+
 
 // const baseNotePossibilities = [43.65,49,55,61.74,77.78,98,110,155.56,185,196,220,311.13,392,440]
 // const baseNotePossibilities = [110,155.56,185,196,220,311.13,392,440]
@@ -175,9 +188,13 @@ function doSonification(received_msg) {
                 }
                 else if (flagUseSampleLoop){
 
+                    // Add random sample selection !!!  
                     // let fileName = "glass_3.wav";
-                    let fileName = "glass_1.wav";
-                    let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
+
+                    let randomNoteIdx_sample = Math.floor(0 + Math.random() * (audioSamples_array.length - 0));
+                    let fileName = audioSamples_array[randomNoteIdx_sample];
+                    // let fileName = "glass_1.wav";
+                    // let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
                     let noteVal = 440;
                     // console.log(Tone.Transport.bpm.value);
                     let interval_sound = Tone.Time('16n').toSeconds();
@@ -201,7 +218,7 @@ function doSonification(received_msg) {
         let center_3d_sel = [0, 0, 0];
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
             // center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['center_3d']);
-            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']); // taking the nearest 3d point from the cluster insteat of the center point
+            center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['center_3d']); // taking the center 3d point from the cluster insteat of the center point
         }
         else if (sonifiedObjects[unique_id] instanceof droneSonification) {
             center_3d_sel = JSON.parse(JsonString[JsonString_keys[iKeys]]['nearest_3d']);
@@ -231,17 +248,23 @@ function doSonification(received_msg) {
         // do tha actual update of the panner
         sonifiedObjects[unique_id].panner.setPosition(center_3d_new[0], center_3d_new[1], center_3d_new[2]);
 
+        // update the panning 3d point of the sonified object - for debugging purposes
+        sonifiedObjects[unique_id].panning_3d_point = [center_3d_new[0], center_3d_new[1], center_3d_new[2]];
+
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
             // update playback rate!
             sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.2, 1.6]);
             sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.5, 1.5]); // input distance.. 
 
+            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [0.01, 2.0]); // mapInterval is [lowerBound, upperBound]
+
+
             // sonifiedObjects[unique_id].playingFlag = false;
 
             // console.log("synth object distance is: " + distance_comp);
 
-            if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
-            // if (distance_comp > 400) { // just some very large value here but this can be a failsafe about the radius of the human workspace.. 
+            // if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
+            if (distance_comp > 400) { // just some very large value here but this can be a failsafe about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false; // this is not reupdating.. 
             }
             // IDEA ! ADD DISTANCE TO OBJECT ALSO AS A VARIABLE INSIDE THE CLASSES !!
@@ -257,8 +280,8 @@ function doSonification(received_msg) {
 
             // console.log("drone object distance is: " + distance_comp);
 
-            if (distance_comp > 2.0) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
-            // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+            // if (distance_comp > 2.0) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
+            if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false;
             }
         }
@@ -279,8 +302,8 @@ function doSonification(received_msg) {
             console.log("sampler object max distance is: " + maxDistance_comp);
             console.log("sampler object min distance is: " + minDistance_comp);
 
-            if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
-            // if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+            // if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
+            if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false;
             }
         }
@@ -312,8 +335,10 @@ function WebSocketCallback() {
                 span_human_html = "<h2><i>Human workspace info:</i></h2>"; // init html string
                 for (var iKeys = 0; iKeys < JsonString_keys.length; iKeys++) {
                     span_human_html+="<b>unique_id: </b>"+JsonString[JsonString_keys[iKeys]]['unique_id']
-                                    //+"</br> <b>Timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['timestamp']
+                                    +"</br> <b>timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['ros_timestamp']
                                     +"</br> <b>center_3d: </b>"+JsonString[JsonString_keys[iKeys]]['center_3d']
+                                    +"</br> <b>nearest_3d: </b>"+JsonString[JsonString_keys[iKeys]]['nearest_3d']
+                                    +"</br> <b>T_map_cam: </b>"+JsonString[JsonString_keys[iKeys]]['T_map_cam']
                                     +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
                 }       
                 document.getElementById("span_human").innerHTML = span_human_html; // print on html
@@ -364,7 +389,7 @@ function WebSocketCallback() {
                     span_human_html = "<h2><i>Human workspace info:</i></h2>"; // init html string
                     for (var iKeys = 0; iKeys < JsonString_keys.length; iKeys++) {
                         span_human_html+="<b>unique_id: </b>"+JsonString[JsonString_keys[iKeys]]['unique_id']
-                                        //+"</br> <b>Timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['timestamp']
+                                        +"</br> <b>Timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['ros_timestamp']
                                         +"</br> <b>center_3d: </b>"+JsonString[JsonString_keys[iKeys]]['center_3d']
                                         +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
                     }       
@@ -399,17 +424,17 @@ function WebSocketCallback() {
             document.getElementById('img_rgb').src = "data:image/jpg;base64," + message.data;
         });
 
-        // rosrun image_transport republish raw in:=out/map2d_img1 out:=out/map2d
-        var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/map2d/compressed', messageType: 'sensor_msgs/CompressedImage' });
-        img_map2d_sub.subscribe(function (message) {
-            document.getElementById('img_map2d').src = "data:image/jpg;base64," + message.data;
-        });
+        // // rosrun image_transport republish raw in:=out/map2d_img1 out:=out/map2d
+        // var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/map2d/compressed', messageType: 'sensor_msgs/CompressedImage' });
+        // img_map2d_sub.subscribe(function (message) {
+        //     document.getElementById('img_map2d').src = "data:image/jpg;base64," + message.data;
+        // });
 
-        // rosrun image_transport republish raw in:=out/walls_img out:=out/walls
-        var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/walls/compressed', messageType: 'sensor_msgs/CompressedImage' });
-        img_map2d_sub.subscribe(function (message) {
-            document.getElementById('img_walls').src = "data:image/jpg;base64," + message.data;
-        });
+        // // rosrun image_transport republish raw in:=out/walls_img out:=out/walls
+        // var img_map2d_sub = new ROSLIB.Topic({ ros: ros, name: '/out/walls/compressed', messageType: 'sensor_msgs/CompressedImage' });
+        // img_map2d_sub.subscribe(function (message) {
+        //     document.getElementById('img_walls').src = "data:image/jpg;base64," + message.data;
+        // });
     }
 }
 

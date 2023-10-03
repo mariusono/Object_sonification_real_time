@@ -14,6 +14,7 @@ class samplerLoopSonification{
         this.valPlaybackPrev = 1;
 
         this.distance = 1000; // some very large value to begin with.. 
+        this.panning_3d_point = [0,0,0]; // initial value
 
         this.sampler = new Tone.Sampler({
             urls: {
@@ -25,6 +26,7 @@ class samplerLoopSonification{
         this.panner = new Tone.Panner3D();
         this.panner.panningModel = 'HRTF';
         this.panner.setPosition(0, 0, 0);
+        this.panner.refDistance = 0.3; // IMPORTANT!
 
         this.sampler.volume.value = -6;
 
