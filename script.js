@@ -389,9 +389,11 @@ function WebSocketCallback() {
                     span_human_html = "<h2><i>Human workspace info:</i></h2>"; // init html string
                     for (var iKeys = 0; iKeys < JsonString_keys.length; iKeys++) {
                         span_human_html+="<b>unique_id: </b>"+JsonString[JsonString_keys[iKeys]]['unique_id']
-                                        +"</br> <b>Timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['ros_timestamp']
-                                        +"</br> <b>center_3d: </b>"+JsonString[JsonString_keys[iKeys]]['center_3d']
-                                        +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
+                            +"</br> <b>timestamp: </b>"+JsonString[JsonString_keys[iKeys]]['ros_timestamp']
+                            +"</br> <b>center_3d: </b>"+JsonString[JsonString_keys[iKeys]]['center_3d']
+                            +"</br> <b>nearest_3d: </b>"+JsonString[JsonString_keys[iKeys]]['nearest_3d']
+                            +"</br> <b>T_map_cam: </b>"+JsonString[JsonString_keys[iKeys]]['T_map_cam']
+                            +"</br> <b>type: </b>"+JsonString[JsonString_keys[iKeys]]['type']+"</br></br>";
                     }       
                     document.getElementById("span_human").innerHTML = span_human_html; // print on html
                 })
