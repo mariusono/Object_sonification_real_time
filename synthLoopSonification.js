@@ -6,6 +6,9 @@ class synthLoopSonification{
         this.valPlayback = 1;
         this.valPlaybackPrev = 1;
 
+        this.expMappingFactor_playbackRate = 8;
+        this.expMappingFactor_roomSize = -1.5;
+
         this.playingFlag = false;
         this.distance = 1000; // some very large value to begin with..  NOT NEEDED ! 
         this.panning_3d_point = [0,0,0]; // initial value
@@ -32,7 +35,7 @@ class synthLoopSonification{
         this.panner = new Tone.Panner3D();
         this.panner.panningModel = 'HRTF';
         this.panner.setPosition(0, 0, 0);
-        this.panner.refDistance = 0.3; // IMPORTANT!
+        this.panner.refDistance = 0.1; // IMPORTANT!
 
         this.synth.connect(this.panner);
 
@@ -55,7 +58,7 @@ class synthLoopSonification{
         if (v < mapInterval[0]) v = mapInterval[0];
         if (v > mapInterval[1]) v = mapInterval[1];
 
-        this.valPlayback = exponentialMapping(0.5, 3.0, mapInterval[1], mapInterval[0], 8.0, v);
+        this.valPlayback = exponentialMapping(0.5, 3.0, mapInterval[1], mapInterval[0], this.expMappingFactor_playbackRate, v);
 
         if (this.valPlayback !== this.valPlaybackPrev) {
             this.loop.playbackRate = this.valPlayback;
@@ -67,7 +70,7 @@ class synthLoopSonification{
         if (v < mapInterval[0]) v = mapInterval[0];
         if (v > mapInterval[1]) v = mapInterval[1];
 
-        let roomSize = exponentialMapping(0.05, 0.75, mapInterval[0], mapInterval[1], -1.5, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
+        let roomSize = exponentialMapping(0.05, 0.75, mapInterval[0], mapInterval[1], this.expMappingFactor_roomSize, v); // params : exponentialMapping(rangeOut_bottom, rangeOut_top, rangeIn_bottom, rangeIn_top, fac, val)
         
         console.log(roomSize);
         this.freeverb.roomSize.value = roomSize;

@@ -1,10 +1,29 @@
 //FLAGS:
 let doNodeJS = true;
 let doROS = !doNodeJS;
-let useVideos = false;
+let useVideos = true;
 
 let flagUseSynthLoop = false;
 let flagUseSampleLoop = true;
+
+let flagSonifyObstacles  = true;
+let flagSonifyWalls  = true;
+
+// Limit distances
+let wallLimitDistance = 1.0;
+setWall_Limit_Dist(2000); // this is equiv to 1.5..
+let obstacleLimitDistance = 1.5;
+setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
+
+// Exp mapping factors
+let expMappingFactor_playbackRate = 8;
+setExpMapFactor_PlaybackRate(5330); // this is equiv to 8..
+let expMappingFactor_harmonicity = 8;
+setExpMapFactor_Harmonicity(5330); // this is equiv to 8..
+
+
+// let wallLimitDistance = 400;
+// let obstacleLimitDistance = 400;
 
 // document objects
 const boxVideos = document.getElementById('videos');
@@ -27,9 +46,33 @@ checkbox_real_time.addEventListener("change", () => {
     console.log(doNodeJS);
 });
 
+
+function setObstacle_Limit_Dist(v) {
+    obstacleLimitDistance = linearMapping(0.5, 4, 0, 10000, v); // db linear Scale
+    document.getElementById('ObstLimitDist').innerText = parseFloat(obstacleLimitDistance).toFixed(4);
+}
+
+function setWall_Limit_Dist(v) {
+    wallLimitDistance = linearMapping(0.5, 3, 0, 10000, v); // db linear Scale
+    document.getElementById('WallLimitDist').innerText = parseFloat(wallLimitDistance).toFixed(4);
+}
+
+function setExpMapFactor_PlaybackRate(v) {
+    expMappingFactor_playbackRate = linearMapping(0.01, 15.0, 0, 10000, v); // db linear Scale
+    document.getElementById('ExpMapFact_Obstacle').innerText = parseFloat(expMappingFactor_playbackRate).toFixed(4);
+}
+
+
+function setExpMapFactor_Harmonicity(v) {
+    expMappingFactor_harmonicity = linearMapping(0.01, 15.0, 0, 10000, v); // db linear Scale
+    document.getElementById('ExpMapFact_Wall').innerText = parseFloat(expMappingFactor_harmonicity).toFixed(4);
+}
+
+
 if (doNodeJS) {
     if (useVideos){
-        video_rgb.src = './data_2_ott/vivavis_rviz_scenario3-2023-10-02_12.23.54.mp4';
+        video_rgb.src = './data_5_ott/rviz-2023-10-05_16.05.29.mp4#t=5,200';
+        // video_rgb.src = './data_5_ott/rviz-2023-10-05_16.05.29.mp4';
         video_rgb.id = 'videoPlayer_rgb';
         video_rgb.controls = true;
         video_rgb.muted = false;
@@ -145,6 +188,7 @@ function doSonification(received_msg) {
 
         // Just set the playing flag to false
         sonifiedObjects[unique_ids_playing[index]].playingFlag = false;
+        console.log('HERE!');
 
         // remove "playing" unique ids that are not in current frame
         unique_ids_playing.splice(index, 1);
@@ -156,7 +200,7 @@ function doSonification(received_msg) {
         let type_obj = JsonString[JsonString_keys[iKeys]]['type'];
         let timestamp = JsonString[JsonString_keys[iKeys]]['ros_timestamp'];
 
-        console.log(timestamp);
+        // console.log(timestamp);
 
         if (!unique_ids_playing.includes(unique_id)) { // if current unique Id is not in already playing unique ids 
 
@@ -206,8 +250,9 @@ function doSonification(received_msg) {
                 }
             }
 
-            // setting the playing flag to true for this unique id.. 
+            // setting the playing flag to true for this unique id..  why here ? 
             sonifiedObjects[unique_id].playingFlag = true;
+            console.log('HERE! SETTING FLAG TO TRUE');
         }
 
         // // setting the playing flag to true for this unique id.. why here ? 
@@ -229,43 +274,69 @@ function doSonification(received_msg) {
         }
 
         center_3d_sel.push(1); // in the Python script, I forgot to add the 1 at the end .. 
+
+        // let center_reshuffle = [0,0,0,1];
+        // center_reshuffle[0] = center_3d_sel[0];
+        // center_reshuffle[1] = center_3d_sel[2];
+        // center_reshuffle[2] = -center_3d_sel[1];
+        // center_3d_sel = center_reshuffle;
+
         let center_3d_new = [0, 0, 0]; // just initializing a list of new coordinates. 
+
+        // IMPORTANT ! NEEDS TO BE INVERTED.. 
+        T_map_cam_mat = math.inv(T_map_cam_mat);
 
         // Applying the rotation from map to camera ! 
         center_3d_new[0] = T_map_cam_mat[0][0] * center_3d_sel[0] + T_map_cam_mat[0][1] * center_3d_sel[1] + T_map_cam_mat[0][2] * center_3d_sel[2] + T_map_cam_mat[0][3] * center_3d_sel[3];
         center_3d_new[1] = T_map_cam_mat[1][0] * center_3d_sel[0] + T_map_cam_mat[1][1] * center_3d_sel[1] + T_map_cam_mat[1][2] * center_3d_sel[2] + T_map_cam_mat[1][3] * center_3d_sel[3];
         center_3d_new[2] = T_map_cam_mat[2][0] * center_3d_sel[0] + T_map_cam_mat[2][1] * center_3d_sel[1] + T_map_cam_mat[2][2] * center_3d_sel[2] + T_map_cam_mat[2][3] * center_3d_sel[3];
 
+        // IMPORTANT ! RIGHT HANDED COORD SYSTEM !! SEE https://developer.mozilla.org/en-US/docs/Web/API/PannerNode
+        center_3d_new[2] = -center_3d_new[2]; 
+
+
         // Computing the distance to the new point
         let distance_comp = Math.sqrt(center_3d_new[0] * center_3d_new[0] + center_3d_new[1] * center_3d_new[1] + center_3d_new[2] * center_3d_new[2]);
         sonifiedObjects[unique_id].distance = distance_comp; // not really needed.. 
         
-        if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
-            // console.log(distance_comp);
-            // console.log(center_3d_new);
-        }
+
 
         // do tha actual update of the panner
+        // sonifiedObjects[unique_id].panner.setPosition(center_3d_new[0], center_3d_new[1], center_3d_new[2]);
         sonifiedObjects[unique_id].panner.setPosition(center_3d_new[0], center_3d_new[1], center_3d_new[2]);
 
         // update the panning 3d point of the sonified object - for debugging purposes
+        // sonifiedObjects[unique_id].panning_3d_point = [center_3d_new[0], center_3d_new[1], center_3d_new[2]];
         sonifiedObjects[unique_id].panning_3d_point = [center_3d_new[0], center_3d_new[1], center_3d_new[2]];
 
+        // // if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
+        // if (sonifiedObjects[unique_id] instanceof droneSonification && type_obj.includes('wall-back')) {
+        //     console.log(sonifiedObjects[unique_id].distance);
+        //     console.log(sonifiedObjects[unique_id].panning_3d_point);
+        // }
+
+        console.log(type_obj + ' ' + distance_comp);
+
+
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {
-            // update playback rate!
-            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.2, 1.6]);
+            // update playback rate!         
+            sonifiedObjects[unique_id].expMappingFactor_playbackRate = expMappingFactor_playbackRate;   
+            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [0.01, obstacleLimitDistance]); // mapInterval is [lowerBound, upperBound]
             sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.5, 1.5]); // input distance.. 
 
-            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [0.01, 2.0]); // mapInterval is [lowerBound, upperBound]
-
-
             // sonifiedObjects[unique_id].playingFlag = false;
-
             // console.log("synth object distance is: " + distance_comp);
 
-            // if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
-            if (distance_comp > 400) { // just some very large value here but this can be a failsafe about the radius of the human workspace.. 
-                    sonifiedObjects[unique_id].playingFlag = false; // this is not reupdating.. 
+            if (flagSonifyObstacles){
+                if (distance_comp > obstacleLimitDistance){ // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+                    sonifiedObjects[unique_id].playingFlag = false;
+                    console.log('HERE!');
+                }
+                else if (distance_comp <= obstacleLimitDistance && unique_ids_current.includes(unique_id)){
+                    sonifiedObjects[unique_id].playingFlag = true;
+                }                
+            }else{
+                sonifiedObjects[unique_id].playingFlag = false;
             }
             // IDEA ! ADD DISTANCE TO OBJECT ALSO AS A VARIABLE INSIDE THE CLASSES !!
 
@@ -275,23 +346,35 @@ function doSonification(received_msg) {
             // sonifiedObjects[unique_id].playingFlag = false;
 
             // update harmonicity.. 
-            sonifiedObjects[unique_id].setHarmonicity(distance_comp, [0.5, 1.5]);
-            sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.5, 2.0]);
+            sonifiedObjects[unique_id].expMappingFactor_harmonicity = expMappingFactor_harmonicity;   
+            sonifiedObjects[unique_id].setHarmonicity(distance_comp, [0.2, wallLimitDistance]);
+            sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.3, 1.0]);
 
-            // console.log("drone object distance is: " + distance_comp);
-
-            // if (distance_comp > 2.0) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
-            if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+            if (flagSonifyWalls){
+                if (distance_comp > wallLimitDistance) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
                     sonifiedObjects[unique_id].playingFlag = false;
+                    // console.log('HERE!');
+                }
+                else if (distance_comp <= wallLimitDistance && unique_ids_current.includes(unique_id)){
+                    sonifiedObjects[unique_id].playingFlag = true;
+                }
+            }else{
+                sonifiedObjects[unique_id].playingFlag = false;
+                // console.log('HERE!');
             }
+
+            // // HARDCODED STOP OF SONIFICATION OF CERTAIN WALLS.. FOR DEBUG!
+            // if (type_obj.includes('wall-right') || type_obj.includes('wall-front') || type_obj.includes('wall-left')){
+            //     sonifiedObjects[unique_id].playingFlag = false;
+            // }
         }
         else if (sonifiedObjects[unique_id] instanceof samplerLoopSonification) {
 
             // console.log(center_3d_sel);
 
-            // update harmonicity.. 
-            // sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [1.0, 2.0]); // mapInterval is [lowerBound, upperBound]
-            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [0.01, 2.0]); // mapInterval is [lowerBound, upperBound]
+            // update playback rate.. 
+            sonifiedObjects[unique_id].expMappingFactor_playbackRate = expMappingFactor_playbackRate;   
+            sonifiedObjects[unique_id].setPlaybackRate(distance_comp, [0.01, obstacleLimitDistance]); // mapInterval is [lowerBound, upperBound]
             sonifiedObjects[unique_id].setRoomSize(distance_comp, [1.0, 2.0]);
 
             // console.log("sampler object distance is: " + distance_comp);
@@ -302,9 +385,16 @@ function doSonification(received_msg) {
             // console.log("sampler object max distance is: " + maxDistance_comp);
             // console.log("sampler object min distance is: " + minDistance_comp);
 
-            // if (distance_comp > 4) { // Only play the object if the distance to it is smaller than 4 !! this number can be changed.. 
-            if (distance_comp > 400) { // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+            if (flagSonifyObstacles){
+                // if (distance_comp > 2.0) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
+                if (distance_comp > obstacleLimitDistance){ // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
                     sonifiedObjects[unique_id].playingFlag = false;
+                }
+                else if (distance_comp <= obstacleLimitDistance && unique_ids_current.includes(unique_id)){
+                    sonifiedObjects[unique_id].playingFlag = true;
+                }  
+            }else{
+                sonifiedObjects[unique_id].playingFlag = false;
             }
         }
     }

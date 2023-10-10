@@ -28,8 +28,8 @@ const path = require('path')
 // PATH WHERE I HAVE MY DATA FILES
 // const DatasetPath = './1_corridoioAltair_smoothMap2d/jsons/human_workspace_jsons'
 
-const DatasetPath = './data_2_ott/jsons/human_workspace_jsons'
-const DatasetPath_frames = './data_2_ott/images/rgb'
+const DatasetPath = './data_5_ott/jsons/human_workspace_jsons'
+const DatasetPath_frames = './data_5_ott/images/rgb'
 
 // import websocket.server library
 WebSocketServer = require('ws').Server;

@@ -14,12 +14,19 @@
     <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4.9/lib/eventemitter2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/roslibjs/1.1.0/roslib.min.js"></script>
     
+
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.157.0/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4.9/lib/eventemitter2.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/roslibjs/1.1.0/roslib.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ros3d@1/build/ros3d.js"></script> -->
 
+    <!-- Add P5JS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 
+    <!-- Add mathjs library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.js"></script>
+    
+    
     <!-- --------------------------- -->
     <title>Real-time sonification</title>
 
@@ -67,6 +74,19 @@
 
     Silence Interval (percentage) <i id='Silence'></i>
     <input id='sliderInterval' type="range" min="0" max="10000" value="1010" oninput="setSilenceTime(this.value)"><br>
+
+    Exp Mapping Fac Obstacles <i id='ExpMapFact_Obstacle'></i>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="5330" oninput="setExpMapFactor_PlaybackRate(this.value)"><br>
+
+    Exp Mapping Fac Walls <i id='ExpMapFact_Wall'></i>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="5330" oninput="setExpMapFactor_Harmonicity(this.value)"><br>
+
+    Obstacle Limit Distance <i id='ObstLimitDist'></i>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="2858" oninput="setObstacle_Limit_Dist(this.value)"><br>
+
+    Wall Limit Distance <i id='WallLimitDist'></i>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="2000" oninput="setWall_Limit_Dist(this.value)"><br>
+
 
     <!-- <h2>Reverb</h2>
     Room Size = <i id='RoomSize'></i><br>
