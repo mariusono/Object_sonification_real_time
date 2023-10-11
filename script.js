@@ -11,7 +11,7 @@ let flagSonifyWalls  = true;
 
 // Limit distances
 let wallLimitDistance = 1.0;
-setWall_Limit_Dist(2000); // this is equiv to 1.5..
+setWall_Limit_Dist(2000); // this is equiv to 1.0..
 let obstacleLimitDistance = 1.5;
 setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
 
