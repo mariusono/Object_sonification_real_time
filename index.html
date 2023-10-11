@@ -2,6 +2,9 @@
 <html>
 <head>
     <meta charset="UTF-8" />
+    <title>Real-time sonification</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
 
     <!-- Add ROS/Websocket libraries -->
     <!-- <script type="text/javascript" src="/usr/share/javascript/eventemitter2/eventemitter2.min.js"> </script> -->
@@ -20,15 +23,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/roslibjs/1.1.0/roslib.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ros3d@1/build/ros3d.js"></script> -->
 
-    <!-- Add P5JS library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 
     <!-- Add mathjs library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.1/math.js"></script>
     
+
     
     <!-- --------------------------- -->
-    <title>Real-time sonification</title>
 
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.36/Tone.js"></script>
     <script defer src="https://unpkg.com/@tonejs/ui/build/code.js"></script>
@@ -42,6 +43,14 @@
     <script defer src="script_tone_js.js"></script>
     <!-- Add websocket script -->
     <script defer src="script.js"></script>
+
+
+    <!-- Add P5JS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script defer src="interactive_mapping_graph_playback.js"></script>
+    <!-- <script defer src="interactive_mapping_graph_harmonicity.js"></script> -->
+
+
 </head>
 <body>
     <!-- <h1> Test Audio ! </h1> -->
@@ -75,17 +84,17 @@
     Silence Interval (percentage) <i id='Silence'></i>
     <input id='sliderInterval' type="range" min="0" max="10000" value="1010" oninput="setSilenceTime(this.value)"><br>
 
-    Exp Mapping Fac Obstacles <i id='ExpMapFact_Obstacle'></i>
-    <input id='sliderInterval' type="range" min="0" max="10000" value="5330" oninput="setExpMapFactor_PlaybackRate(this.value)"><br>
-
-    Exp Mapping Fac Walls <i id='ExpMapFact_Wall'></i>
-    <input id='sliderInterval' type="range" min="0" max="10000" value="5330" oninput="setExpMapFactor_Harmonicity(this.value)"><br>
-
     Obstacle Limit Distance <i id='ObstLimitDist'></i>
     <input id='sliderInterval' type="range" min="0" max="10000" value="2858" oninput="setObstacle_Limit_Dist(this.value)"><br>
 
     Wall Limit Distance <i id='WallLimitDist'></i>
     <input id='sliderInterval' type="range" min="0" max="10000" value="2000" oninput="setWall_Limit_Dist(this.value)"><br>
+
+    Exp Mapping Fac Obstacles <i id='ExpMapFact_Obstacle'></i>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="5330" oninput="setExpMapFactor_PlaybackRate(this.value)"><br>
+
+    Exp Mapping Fac Walls <i id='ExpMapFact_Wall'></i>
+    <input id='sliderInterval' type="range" min="0" max="10000" value="5330" oninput="setExpMapFactor_Harmonicity(this.value)"><br>
 
 
     <!-- <h2>Reverb</h2>
@@ -102,6 +111,8 @@
 
     </div>
     <br>
+    <div id="canvas-container-1"></div>
+    <!-- <div id="canvas-container-2"></div> -->
     <div id="span_human"></div>
     <div id="span_walls"></div>
     

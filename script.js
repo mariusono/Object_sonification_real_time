@@ -1,7 +1,7 @@
 //FLAGS:
 let doNodeJS = true;
 let doROS = !doNodeJS;
-let useVideos = true;
+let useVideos = false;
 
 let flagUseSynthLoop = false;
 let flagUseSampleLoop = true;

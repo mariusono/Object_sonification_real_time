@@ -1,0 +1,10 @@
+#canvas-container-1 {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 50%;
+    /* Adjust the left value to control the canvas width */
+    background-color: #ffffff;
+    /* Adjust the background color as needed */
+}
