@@ -40,14 +40,17 @@
     <script defer src="droneSonification.js"></script>
     <script defer src="samplerLoopSonification.js"></script>
     <!-- Add tone.js script -->
-    <script defer src="script_tone_js.js"></script>
+    <!-- <script defer src="script_tone_js.js"></script> -->
+    <script defer src="script_tone_js_for_raspberry_test.js"></script>
     <!-- Add websocket script -->
-    <script defer src="script.js"></script>
+    <!-- <script defer src="script.js"></script> -->
+    <script defer src="script_for_raspberry_test.js"></script>
 
 
     <!-- Add P5JS library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
-    <script defer src="interactive_mapping_graph_playback.js"></script>
+    <!-- <script defer src="interactive_mapping_graph_playback.js"></script> -->
+
     <!-- <script defer src="interactive_mapping_graph_harmonicity.js"></script> -->
 
 
@@ -102,9 +105,11 @@
     <input id='sliderInterval' type="range" min="0" max="10000" value="0" oninput="setRoomSize(this.value)"><br> -->
 
     <h2>
-        <div id = "sse">
+        <button id="button_3">Run Websocket</button>
+
+        <!-- <div id = "sse">
             <a href = "javascript:WebSocketCallback()">Run WebSocket</a>
-        </div>
+        </div> -->
     </h2>
     <!-- The videos div will be filled in the script.js -->
     <div class="videos" id="videos"> 

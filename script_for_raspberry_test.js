@@ -11,9 +11,11 @@ let flagSonifyWalls  = true;
 
 // Limit distances
 let wallLimitDistance = 1.0;
-setWall_Limit_Dist(2000); // this is equiv to 1.0..
+// setWall_Limit_Dist(2000); // this is equiv to 1.0..
+setWall_Limit_Dist(10000); // this is equiv to max distance
 let obstacleLimitDistance = 1.5;
-setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
+// setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
+setObstacle_Limit_Dist(10000); // this is equiv to max distance
 
 // Exp mapping factors
 let expMappingFactor_playbackRate = 8;
@@ -26,17 +28,17 @@ button_3.addEventListener("click", async () => {
     WebSocketCallback();
 });
 
-function clickButtonAfterDelay() {
-    // setTimeout(function () {
-    //     button_1.click();
-    // }, 1000); // 1000 milliseconds = 1 second
-    // setTimeout(function () {
-    //     button_3.click();
-    // }, 2000); // 1000 milliseconds = 1 second
-}
+// function clickButtonAfterDelay() {
+//     // setTimeout(function () {
+//     //     button_1.click();
+//     // }, 1000); // 1000 milliseconds = 1 second
+//     // setTimeout(function () {
+//     //     button_3.click();
+//     // }, 2000); // 1000 milliseconds = 1 second
+// }
 
 // // Attach the function to the window's load event
-window.onload = clickButtonAfterDelay;
+// window.onload = clickButtonAfterDelay;
 
 // let wallLimitDistance = 400;
 // let obstacleLimitDistance = 400;

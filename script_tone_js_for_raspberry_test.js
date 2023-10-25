@@ -4,7 +4,7 @@
 
 // TONE.JS PART
 let flag_audio_on_off = false; // initialize global audio on/off flag
-let flagAllSounds = false;
+let flagAllSounds = true;
 let flagAllSounds_reset = false;
 
 // // create reverb node
