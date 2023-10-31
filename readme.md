@@ -8,6 +8,8 @@ Simlarly, idendified obstacles are assigned a short transient sound (for example
 
 When the user moves in the room, or moves their head, resulting in the camera view changing, the panning of the sound sources will change accordingly, with the walls and obstacles being fixed in space.  
 
+!!YADAYADAYADA!!
+
 **STEP BY STEP GUIDE:**
 
 1. Download the github repository at: https://github.com/mariusono/Object_sonification_real_time 
