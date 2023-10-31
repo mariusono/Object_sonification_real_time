@@ -1,4 +1,4 @@
-STEP BY STEP GUIDE:
+**STEP BY STEP GUIDE:**
 
 1. Download the github repository at: https://github.com/mariusono/Object_sonification_real_time 
 
