@@ -1,4 +1,14 @@
-STEP BY STEP GUIDE:
+**INTRODUCTION:**
+
+This is a repository for a web application built for sonifying indoor spaces with the aim of helping blind people navigate and get a sense of the space they are in. It is built to work in tandem with the visual analysis software found at: https://github.com/AndreaRoberti/vivavis_vision . The video app maps the walls and obstacles present in the room to point cloud data and sends, via a websocket connection, this data to the current web app. 
+
+Each identified wall is then assigned a drone sound source (a constant harmonic tone) whose pitch increases when the user gets closer to the wall. The sound is panned in space, using 3D panning, with the sound source being positioned at the nearest point of the wall relative to the camera view ( which in testing situations would be mounted on the user's head ). 
+
+Simlarly, idendified obstacles are assigned a short transient sound (for example a kocking sound) out of a small database of sounds hosted at https://mariusono.github.io/Vis-a-Vis/audio_files/ . The sound source is positioned in space at the center of the point cloud that is associated with the obstacle. 
+
+When the user moves in the room, or moves their head, resulting in the camera view changing, the panning of the sound sources will change accordingly, with the walls and obstacles being fixed in space.  
+
+**STEP BY STEP GUIDE:**
 
 1. Download the github repository at: https://github.com/mariusono/Object_sonification_real_time 
 

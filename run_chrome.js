@@ -7,8 +7,8 @@ const puppeteer = require('puppeteer');
     const path = require('path');
     // const browser = await puppeteer.launch({ headless: false })
     const browser = await puppeteer.launch({ 
-        // executablePath: '/usr/local/bin/chromium',
-        executablePath: '/usr/bin/chromium-browser',
+        executablePath: '/usr/local/bin/chromium',
+        // executablePath: '/usr/bin/chromium-browser',
         ignoreDefaultArgs: ['--mute-audio'],
         args: ['--autoplay-policy=no-user-gesture-required'],
         headless: "new", 
