@@ -44,8 +44,6 @@ let intervalVal = loopGlobal.interval;
 let silenceTimePerc = 10; // default value
 let silenceTime = intervalVal * silenceTimePerc / 100;
 
-intervalVal = 0.1;
-setLoopTime(0);
 
 // Set sliders.
 document.getElementById('Gain').innerText = parseFloat(mag2db(gainValue)).toFixed(4);

@@ -161,15 +161,12 @@ const baseNotePossibilities = [392,440]
 const baseNotePossibilities_drone = [55, 75, 110,155.56,196]
 
 // possible samples:
-// let audioSamples_array = ["glass_1.wav",
-//                           "glass_2.wav",
-//                           "glass_3.wav",
-//                           "knock.wav",
-//                           "drone.wav",
-//                           "violin_1.wav"];
-
 let audioSamples_array = ["glass_1.wav",
-    "knock.wav"];                          
+                          "glass_2.wav",
+                          "glass_3.wav",
+                          "knock.wav",
+                          "drone.wav",
+                          "violin_1.wav"];
 
 // samples url:
 let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
