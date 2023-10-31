@@ -11,15 +11,19 @@ let flagSonifyWalls  = true;
 
 // Limit distances
 let wallLimitDistance = 1.0;
-setWall_Limit_Dist(2000); // this is equiv to 1.0..
+// setWall_Limit_Dist(2000); // this is equiv to 1.0..
+setWall_Limit_Dist(10000); // this is equiv to max distance
 let obstacleLimitDistance = 1.5;
-setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
+// setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
+setObstacle_Limit_Dist(10000); // this is equiv to max distance
 
 // Exp mapping factors
 let expMappingFactor_playbackRate = 8;
-setExpMapFactor_PlaybackRate(5330); // this is equiv to 8..
+// setExpMapFactor_PlaybackRate(5330); // this is equiv to 8..
+setExpMapFactor_PlaybackRate(0); // this is equiv to min value
 let expMappingFactor_harmonicity = 8;
-setExpMapFactor_Harmonicity(5330); // this is equiv to 8..
+// setExpMapFactor_Harmonicity(5330); // this is equiv to 8..
+setExpMapFactor_Harmonicity(0); // this is equiv to min value
 
 const button_3 = document.getElementById("button_3");
 button_3.addEventListener("click", async () => {
@@ -158,13 +162,17 @@ let unique_ids_playing = [];
 const baseNotePossibilities = [392,440]
 const baseNotePossibilities_drone = [55, 75, 110,155.56,196]
 
+// // possible samples:
+// let audioSamples_array = ["glass_1.wav",
+//                           "glass_2.wav",
+//                           "glass_3.wav",
+//                           "knock.wav",
+//                           "drone.wav",
+//                           "violin_1.wav"];
 // possible samples:
 let audioSamples_array = ["glass_1.wav",
-                          "glass_2.wav",
                           "glass_3.wav",
-                          "knock.wav",
-                          "drone.wav",
-                          "violin_1.wav"];
+                          "knock.wav"];                          
 
 // samples url:
 let urlName = "https://mariusono.github.io/Vis-a-Vis/audio_files/";
@@ -331,7 +339,7 @@ function doSonification(received_msg) {
         //     console.log(sonifiedObjects[unique_id].panning_3d_point);
         // }
 
-        console.log(type_obj + ' ' + distance_comp);
+        // console.log(type_obj + ' ' + distance_comp);
 
 
         if (sonifiedObjects[unique_id] instanceof synthLoopSonification) {

@@ -4,7 +4,7 @@
 
 // TONE.JS PART
 let flag_audio_on_off = false; // initialize global audio on/off flag
-let flagAllSounds = false;
+let flagAllSounds = true;
 let flagAllSounds_reset = false;
 
 // // create reverb node
@@ -37,7 +37,7 @@ let loopGlobal;
 loopGlobal = new Tone.Loop(loopStep, "1n");  // '1n' here sets the speed of our loop -- every 1th note
 count = 0; // counter for number of objects currently playing.
 
-loopGlobal.interval = 1;
+loopGlobal.interval = 0.1;
 
 let gainValue = gainNode.gain.value;
 let intervalVal = loopGlobal.interval;
