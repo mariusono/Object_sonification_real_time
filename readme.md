@@ -1,3 +1,8 @@
+**INTRODUCTION:**
+
+This is a repository for a web application built to work in tandem with the visual analysis software found at: https://github.com/AndreaRoberti/vivavis_vision , built to help navigate blind people navingate in indoor spaces. 
+
+
 **STEP BY STEP GUIDE:**
 
 1. Download the github repository at: https://github.com/mariusono/Object_sonification_real_time 
