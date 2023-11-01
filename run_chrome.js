@@ -26,6 +26,11 @@ const puppeteer = require('puppeteer');
     await page.goto(website);
     //   await page.goto('www.google.com'); // Replace with the actual file path
 
+
+    // await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second before clicking the real-time toggle checkbox
+    // await page.click('#checkbox_real_time');
+    // console.log('Clicking Real-time checkbox');
+
     await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second before clicking start audio .. 
     await page.click('#button_1');
     console.log('Clicking Start Audio button');

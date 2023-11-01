@@ -92,3 +92,44 @@ FUNCTIONALITY:
 - shorter distance - > higher pitch
 - this mapping is visualized interactively in the bottom graph to the right of the web page.
 - play around with this slider and the "Wall Limit Distance" slider to see how this mapping changes.
+
+
+**RUN THE APP ON A RASPBERRY PI**
+
+Below is a guide on running the app on a Raspberry Pi, in a headless mode using chromium browser.
+
+Either connect the raspberry pi to a screen and keyboard and run all the following steps on its terminal, or you can also do all these steps if you just SSH into it via a local machine which shares the same wifi.   
+
+Copy the repository at https://github.com/mariusono/Object_sonification_real_time to your Raspberry Pi
+NOTE: if u are ssh-ed into the board you can run the "scp -r PATH_TO_COPY_FROM_LOCAL PATH_TO_COPY_TO_ON_RASPBERRY" 
+
+Then you need to have nodejs installed on your raspberry pi. Follow this tutorial to install nodejs and npm on the raspberry pi: https://pimylifeup.com/raspberry-pi-nodejs/ . 
+
+Next step is to install the puppeteer library (npm install puppeteer ). BUT I think it is already included in the latest nodejs release. That is, use NODE_MAJOR=20 in the tutorial above. 
+
+Then, install chromium-browser on the raspberry. Again, if you follow the tutorial above, running the commands "sudo apt update" and "sudo apt upgrade" should already install chromium. But, you can also use this tutorial, to make sure it is the latest version : https://pimylifeup.com/raspberry-pi-chromium-browser/ . 
+
+Now that all the prerequisites are in place, follow these steps:
+
+1. open a terminal
+2. cd into the directory where you download the repository Object_sonification_real_time .
+3. run the command "node script_serverWebsocket.js" 
+4. open another terminal
+5. cd into the directory where you download the repository Object_sonification_real_time .
+6. run the command "node run_chrome.js" 
+
+- NOTE: in the run_chrome.js script make sure to include the executablePath to the chromium-browser as it would be for the raspberry OS, i.e. /usr/bin/chromium-browser . see line 11 of the code. You can make sure the executablePath is the right one by running the command "which chromium-browser" -> that will give you the executable path that you need, in case it is another one.. 
+- the script opens the "index.html" file in the repository with the chromium-browser, in headless mode.. then waits 1 second before clicking the button "start audio" and another second before clicking the button "Run Websocket", which starts the stream of json files from the server and begins the sonification.
+- NOTE: I have the flag such that all sonified objects are played at the same time and the minimum distance to sonification is set to max , i.e 4 meters for obstacles and 3 meters for walls. This ensures that a lot of instances are sonified at the same time, increasing the cpu load (for testing)
+- Running in headless mode does not allow us to control the sliders and options of the sonification. but it is something we can try to work around somehow. 
+
+IMPORTANT NOTE: If running the app with the live visual analysis software, there is no need to run the command "node script_serverWebsocket.js". However, you must go into the run_chrome.js  script and uncomment lines 30 to 32: 
+
+```js
+    await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second before clicking the real-time toggle checkbox
+    await page.click('#checkbox_real_time');
+    console.log('Clicking Real-time checkbox');
+``` 
+
+
+
