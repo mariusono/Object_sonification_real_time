@@ -3,8 +3,8 @@ let doNodeJS = true;
 let doROS = !doNodeJS;
 let useVideos = false;
 
-let flagUseSynthLoop = false;
-let flagUseSampleLoop = true;
+let flagUseSynthLoop = true;
+let flagUseSampleLoop = false;
 
 let flagSonifyObstacles  = true;
 let flagSonifyWalls  = true;
