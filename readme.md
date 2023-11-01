@@ -92,7 +92,7 @@ FUNCTIONALITY:
 - this mapping is visualized interactively in the bottom graph to the right of the web page.
 - play around with this slider and the "Wall Limit Distance" slider to see how this mapping changes.
 
-<h1>3. RUN THE APP ON A RASPBERRY PI/h1>
+<h1>3. RUN THE APP ON A RASPBERRY PI</h1>
 
 Below is a guide on running the app on a Raspberry Pi, in a headless mode using chromium browser.
 
