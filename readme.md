@@ -1,5 +1,4 @@
-
-**INTRODUCTION:**
+<h1>1. INTRODUCTION</h1>
 
 This is a repository for a web application built for sonifying indoor spaces with the aim of helping blind people navigate and get a sense of the space they are in. It is built to work in tandem with the visual analysis software found at: https://github.com/AndreaRoberti/vivavis_vision . The video app maps the walls and obstacles present in the room to point cloud data and sends, via a websocket connection, this data to the current web app.
 
@@ -10,7 +9,7 @@ Simlarly, idendified obstacles are assigned a short transient sound, i.e. a quic
 When the user moves in the room, or moves their head, resulting in the camera view changing, the panning of the sound sources will change accordingly, with the walls and obstacles being fixed in space.
 
 
-**STEP BY STEP GUIDE:**
+<h1>2. STEP BY STEP GUIDE</h1>
 
   
 Below there is the functionality of the web app in a browser setting, with details of each of the possible controls. Following this, a method to run the app in a headless browser mode will be given.
@@ -93,8 +92,7 @@ FUNCTIONALITY:
 - this mapping is visualized interactively in the bottom graph to the right of the web page.
 - play around with this slider and the "Wall Limit Distance" slider to see how this mapping changes.
 
-
-**RUN THE APP ON A RASPBERRY PI**
+<h1>3. RUN THE APP ON A RASPBERRY PI/h1>
 
 Below is a guide on running the app on a Raspberry Pi, in a headless mode using chromium browser.
 
@@ -131,5 +129,5 @@ IMPORTANT NOTE: If running the app with the live visual analysis software, there
     console.log('Clicking Real-time checkbox');
 ``` 
 
-
+The visual app must be started first, and esuring that data is being sent via the websocket protocol. 
 
