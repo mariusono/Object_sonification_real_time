@@ -9,13 +9,20 @@ let flagUseSampleLoop = false;
 let flagSonifyObstacles  = true;
 let flagSonifyWalls  = true;
 
+let flagDanger = false;
+
 // Limit distances
 let wallLimitDistance = 1.0;
-// setWall_Limit_Dist(2000); // this is equiv to 1.0..
-setWall_Limit_Dist(10000); // this is equiv to max distance
 let obstacleLimitDistance = 1.5;
-// setObstacle_Limit_Dist(2858); // this is equiv to 1.5..
+let criticalDistance = 0.6;
+
+setWall_Limit_Dist(10000); // this is equiv to max distance
 setObstacle_Limit_Dist(10000); // this is equiv to max distance
+setCritical_Limit_Dist(1872); // this is equivalent to 0.6
+
+// let criticalDistance = 50;
+// add a slider here also
+
 
 // Exp mapping factors
 let expMappingFactor_playbackRate = 8;
@@ -30,17 +37,17 @@ button_3.addEventListener("click", async () => {
     WebSocketCallback();
 });
 
-function clickButtonAfterDelay() {
-    // setTimeout(function () {
-    //     button_1.click();
-    // }, 1000); // 1000 milliseconds = 1 second
-    // setTimeout(function () {
-    //     button_3.click();
-    // }, 2000); // 1000 milliseconds = 1 second
-}
+// function clickButtonAfterDelay() {
+//     // setTimeout(function () {
+//     //     button_1.click();
+//     // }, 1000); // 1000 milliseconds = 1 second
+//     // setTimeout(function () {
+//     //     button_3.click();
+//     // }, 2000); // 1000 milliseconds = 1 second
+// }
 
-// // Attach the function to the window's load event
-window.onload = clickButtonAfterDelay;
+// // // Attach the function to the window's load event
+// window.onload = clickButtonAfterDelay;
 
 // let wallLimitDistance = 400;
 // let obstacleLimitDistance = 400;
@@ -60,6 +67,7 @@ const img_walls = document.createElement('img');
 const checkbox_real_time = document.getElementById("checkbox_real_time");
 
 
+// UI interactions..
 checkbox_real_time.addEventListener("change", () => {
     doNodeJS = !doNodeJS;
     doROS = !doNodeJS;
@@ -77,6 +85,12 @@ function setWall_Limit_Dist(v) {
     document.getElementById('WallLimitDist').innerText = parseFloat(wallLimitDistance).toFixed(4);
 }
 
+function setCritical_Limit_Dist(v) {
+    criticalDistance = linearMapping(0.05, 3, 0, 10000, v); // db linear Scale
+    console.log(v);
+    document.getElementById('CriticalLimitDist').innerText = parseFloat(criticalDistance).toFixed(4);
+}
+
 function setExpMapFactor_PlaybackRate(v) {
     expMappingFactor_playbackRate = linearMapping(0.01, 15.0, 0, 10000, v); // db linear Scale
     document.getElementById('ExpMapFact_Obstacle').innerText = parseFloat(expMappingFactor_playbackRate).toFixed(4);
@@ -87,6 +101,7 @@ function setExpMapFactor_Harmonicity(v) {
     expMappingFactor_harmonicity = linearMapping(0.01, 15.0, 0, 10000, v); // db linear Scale
     document.getElementById('ExpMapFact_Wall').innerText = parseFloat(expMappingFactor_harmonicity).toFixed(4);
 }
+
 
 
 if (doNodeJS) {
@@ -352,13 +367,20 @@ function doSonification(received_msg) {
             // console.log("synth object distance is: " + distance_comp);
 
             if (flagSonifyObstacles){
-                if (distance_comp > obstacleLimitDistance){ // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+                if (distance_comp > obstacleLimitDistance){ 
                     sonifiedObjects[unique_id].playingFlag = false;
                     console.log('HERE!');
                 }
                 else if (distance_comp <= obstacleLimitDistance && unique_ids_current.includes(unique_id)){
                     sonifiedObjects[unique_id].playingFlag = true;
-                }                
+                }         
+                // add switch between playing sounds in a loop and playing all sounds if their respective objects are closer than a criticalDistance meteers
+                if (distance_comp < criticalDistance && unique_ids_current.includes(unique_id)){ 
+                    flagAllSounds = true;
+                    flagAllSounds_reset = true;
+                    flagDanger = true;
+                    sonifiedObjects[unique_id].playingFlag = true;
+                }           
             }else{
                 sonifiedObjects[unique_id].playingFlag = false;
             }
@@ -375,13 +397,20 @@ function doSonification(received_msg) {
             sonifiedObjects[unique_id].setRoomSize(distance_comp, [0.3, 1.0]);
 
             if (flagSonifyWalls){
-                if (distance_comp > wallLimitDistance) { // Only play the object if the distance to it is smaller than 2.0 !! this number can be changed.. 
+                if (distance_comp > wallLimitDistance) { 
                     sonifiedObjects[unique_id].playingFlag = false;
                     // console.log('HERE!');
                 }
                 else if (distance_comp <= wallLimitDistance && unique_ids_current.includes(unique_id)){
                     sonifiedObjects[unique_id].playingFlag = true;
                 }
+                // add switch between playing sounds in a loop and playing all sounds if their respective objects are closer than a critical distance meteers
+                if (distance_comp < criticalDistance && unique_ids_current.includes(unique_id)){ 
+                    flagAllSounds = true;
+                    flagAllSounds_reset = true;
+                    flagDanger = true;
+                    sonifiedObjects[unique_id].playingFlag = true;
+                }   
             }else{
                 sonifiedObjects[unique_id].playingFlag = false;
                 // console.log('HERE!');
@@ -417,15 +446,48 @@ function doSonification(received_msg) {
                 else if (distance_comp <= obstacleLimitDistance && unique_ids_current.includes(unique_id)){
                     sonifiedObjects[unique_id].playingFlag = true;
                 }  
+                // add switch between playing sounds in a loop and playing all sounds if their respective objects are closer than a critical distance meteers
+                if (distance_comp < criticalDistance && unique_ids_current.includes(unique_id)){ // just some very large value here but this can be a failsafe thing about the radius of the human workspace.. 
+                    flagAllSounds = true;
+                    flagAllSounds_reset = true;
+                    flagDanger = true;
+                    sonifiedObjects[unique_id].playingFlag = true;
+                }   
             }else{
                 sonifiedObjects[unique_id].playingFlag = false;
             }
+        }
+
+        let sonifiedObjects_keys = Object.keys(sonifiedObjects);
+
+        if (flagDanger){
+            for (let i = 0; i<sonifiedObjects_keys.length;i++)
+            {
+                if (sonifiedObjects[sonifiedObjects_keys[i]].distance > criticalDistance)
+                {
+                    sonifiedObjects[sonifiedObjects_keys[i]].playingFlag = false;
+                }
+            }
+        }
+
+        let distanceArray = [];
+        for (let i = 0; i<sonifiedObjects_keys.length;i++)
+        {
+            distanceArray[i] = sonifiedObjects[sonifiedObjects_keys[i]].distance;
+        }
+        minDistance = Math.min(...distanceArray);
+        if (minDistance > criticalDistance){
+            flagAllSounds = false;
+            flagAllSounds_reset = true;
+            flagDanger = false;
         }
     }
 }
 
 // The callback carried out when the websocket is connected ! 
 function WebSocketCallback() {
+
+    console.log("calling WebSocketCallback()");
 
     if (doNodeJS) {
         video_rgb.play();

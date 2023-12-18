@@ -4,7 +4,8 @@
 
 // TONE.JS PART
 let flag_audio_on_off = false; // initialize global audio on/off flag
-let flagAllSounds = true;
+// let flagAllSounds = true;
+let flagAllSounds = false;
 let flagAllSounds_reset = false;
 
 // // create reverb node
@@ -37,7 +38,8 @@ let loopGlobal;
 loopGlobal = new Tone.Loop(loopStep, "1n");  // '1n' here sets the speed of our loop -- every 1th note
 count = 0; // counter for number of objects currently playing.
 
-loopGlobal.interval = 0.1;
+// loopGlobal.interval = 0.1;
+loopGlobal.interval = 1;
 
 let gainValue = gainNode.gain.value;
 let intervalVal = loopGlobal.interval;
@@ -179,13 +181,13 @@ function loopStep(time){
 }
 
 
-const checkbox_sounds = document.getElementById("checkbox_sounds");
+// const checkbox_sounds = document.getElementById("checkbox_sounds");
 
-checkbox_sounds.addEventListener("change", () => {
-    flagAllSounds = !flagAllSounds;
-    flagAllSounds_reset = true;
-    console.log(flagAllSounds);
-});
+// checkbox_sounds.addEventListener("change", () => {
+//     flagAllSounds = !flagAllSounds;
+//     flagAllSounds_reset = true;
+//     console.log(flagAllSounds);
+// });
 
 
 //attach a click listener to a play button
@@ -228,6 +230,8 @@ function setGain(v) {
 
 function setLoopTime(v) {
     intervalVal = linearMapping(0.1, 5.0, 0, 10000, v); // db linear Scale
+
+    console.log(v);
 
     document.getElementById('Interval').innerText = parseFloat(intervalVal).toFixed(4);
     // gainNode.gain.value = gainVal;
